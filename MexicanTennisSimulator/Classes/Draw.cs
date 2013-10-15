@@ -9,22 +9,21 @@ using System.Windows.Shapes;
 
 namespace MexicanTennisSimulator.Classes
 {
-    class Draw
+    sealed class Draw
     {
-        private VirtualCourt _vCourt;
-        private Canvas _rCourt;
-        private List<Shape> _courtObjects;
+        private static VirtualCourt _vCourt;
+        private static Canvas _rCourt;
+        private static List<Shape> _courtObjects;
 
-        public Draw(ref Canvas rCourt, VirtualCourt vCourt = null)
+        public Draw(ref Canvas rCourt, ref VirtualCourt vCourt)
         {
             _vCourt = vCourt;
-            _rCourt = rCourt;
-
-            DrawCourt();
+            //_rCourt = rCourt;
         }
 
-        private void DrawCourt()
+        public static void DrawCourt(Canvas rCourt)
         {
+            _rCourt = rCourt;
             _courtObjects = new List<Shape>();
             int index;
             int strokeThicknessLines = 5;
@@ -135,6 +134,14 @@ namespace MexicanTennisSimulator.Classes
 
             foreach (var item in _courtObjects)
                 _rCourt.Children.Add(item);
+        }
+
+        public void DrawEntity()
+        {
+        }
+
+        private void MoveEntity()
+        { 
         }
     }
 }

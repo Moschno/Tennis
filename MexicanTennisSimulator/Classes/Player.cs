@@ -11,8 +11,8 @@ namespace MexicanTennisSimulator.Classes
 {
     class Player : Entity, IEntity
     {
-        public Player(ref Canvas canvas, double actualPosX, double actualPosY)
-            : base(ref canvas, actualPosX, actualPosY)
+        public Player()
+            : base()
         {
             var radBrush = new RadialGradientBrush();
             // Create a radial gradient brush with five stops 
@@ -52,9 +52,9 @@ namespace MexicanTennisSimulator.Classes
             _entity.Height = 50;
         }
 
-        public override void Move(double durationInSeconds = 0, double? targetPosX = null, double? targetPosY = null)
+        public override void Move(double durationInSeconds = 0, double[] targetPos = null)
         {
-            SetTarget(durationInSeconds, targetPosX, targetPosY);
+            SetTarget(durationInSeconds, targetPos);
             if (_durationTillTarget > 0)
             {
                 _sumAnimations = new Animation[2];

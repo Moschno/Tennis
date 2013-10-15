@@ -15,8 +15,8 @@ namespace MexicanTennisSimulator.Classes
 {
     class Ball : Entity, IEntity
     {
-        public Ball(ref Canvas canvas, double actualPosX, double actualPosY)
-            : base(ref canvas, actualPosX, actualPosY)
+        public Ball()
+            : base()
         {
             Color = Brushes.Yellow;
             _entity.Fill = Color;
@@ -24,9 +24,9 @@ namespace MexicanTennisSimulator.Classes
             _entity.Height = 8;
         }
 
-        public override void Move(double durationInSeconds = 0, double? targetPosX = null, double? targetPosY = null)
+        public override void Move(double durationInSeconds = 0, double[] targetPos = null)
         {
-            SetTarget(durationInSeconds, targetPosX, targetPosY);
+            SetTarget(durationInSeconds, targetPos);
             if (_durationTillTarget > 0)
             {
                 _sumAnimations = new Animation[4];

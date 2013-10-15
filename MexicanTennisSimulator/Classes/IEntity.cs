@@ -8,6 +8,6 @@ namespace MexicanTennisSimulator.Classes
 {
     interface IEntity
     {
-        void Move(double durationInSeconds, double? targetPosX, double? targetPosY);
+        void Move(double durationInSeconds, double[] targetPos);
     }
 }
