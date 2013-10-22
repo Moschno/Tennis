@@ -12,16 +12,14 @@ using DevExpress.Xpf.Core;
 
 namespace MexicanTennisSimulator.Classes
 {
-    abstract class Entity : IEntity
+    abstract class Entity : Shape, IEntity
     {
-        protected Canvas _panel;
+        protected VirtualCourt _vcourt;
         protected Animation[] _sumAnimations;
         protected Ellipse _entity;
         private Brush _color;
-        protected double _actualPosX;
-        protected double _actualPosY;
-        protected double _targetPosX;
-        protected double _targetPosY;
+        protected double[] _actualPos;
+        protected double[] _targetPos;
         protected double _durationTillTarget;
 
         public Brush Color
@@ -31,26 +29,19 @@ namespace MexicanTennisSimulator.Classes
         }
 
         protected delegate void Animation();
-        public abstract void Move(double durationInSeconds = 0, double? targetPosX = null, double? targetPosY = null);
+        public abstract void Move(double durationInSeconds = 0, double[] targetPos = null);
 
-        protected Entity(ref Canvas canvas, double actualPosX, double actualPosY)
+        protected Entity()
         {
             _entity = new Ellipse();
-            _panel = canvas;
-            _panel.Children.Add(_entity);
-
-            _actualPosX = actualPosX;
-            _actualPosY = actualPosY;
-            _entity.SetLeft(actualPosX);
-            _entity.SetTop(actualPosY);
         }
 
         protected void RefreshValues()
         {
             _durationTillTarget = 0;
             _sumAnimations = null;
-            _actualPosX = _targetPosX;
-            _actualPosY = _targetPosY;
+            _actualPos = _targetPos;
+            _actualPos = _targetPos;
         }
 
         protected void Go()
@@ -62,20 +53,17 @@ namespace MexicanTennisSimulator.Classes
             }
             else
             {
-                _entity.SetLeft(_targetPosX);
-                _entity.SetTop(_targetPosY);
+                _entity.SetLeft(_targetPos[0]);
+                _entity.SetTop(_targetPos[1]);
             }  
         }
 
-        protected void SetTarget(double durationInSeconds = 0, double? targetPosX = null, double? targetPosY = null)
+        protected void SetTarget(double durationInSeconds = 0, double[] targetPos = null)
         {
             _durationTillTarget = durationInSeconds;
 
-            if (targetPosX != null)
-                _targetPosX = (double)targetPosX;
-
-            if (targetPosY != null)
-                _targetPosY = (double)targetPosY;
+            if (targetPos != null)
+                _targetPos = targetPos;
         }
 
         protected void SetMoveAnimation()
@@ -83,17 +71,17 @@ namespace MexicanTennisSimulator.Classes
             var duration = new Duration(TimeSpan.FromSeconds(_durationTillTarget));
             var actAnimation = new Storyboard();
 
-            var moveDownAnimation = new DoubleAnimation(_actualPosY, _targetPosY, duration);
-            actAnimation.Children.Add(moveDownAnimation);
-            Storyboard.SetTarget(moveDownAnimation, _entity);
-            Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
-            _sumAnimations[0] = new Animation(actAnimation.Begin);
-
-            var moveRightAnimation = new DoubleAnimation(_actualPosX, _targetPosX, duration);
+            var moveRightAnimation = new DoubleAnimation(_actualPos[0], _targetPos[0], duration);
             actAnimation.Children.Add(moveRightAnimation);
             Storyboard.SetTarget(moveRightAnimation, _entity);
             Storyboard.SetTargetProperty(moveRightAnimation, new PropertyPath(Canvas.LeftProperty));
             _sumAnimations[1] = new Animation(actAnimation.Begin);
+
+            var moveDownAnimation = new DoubleAnimation(_actualPos[1], _targetPos[1], duration);
+            actAnimation.Children.Add(moveDownAnimation);
+            Storyboard.SetTarget(moveDownAnimation, _entity);
+            Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
+            _sumAnimations[0] = new Animation(actAnimation.Begin);
         }
     }
 }

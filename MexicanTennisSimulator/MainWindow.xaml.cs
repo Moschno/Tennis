@@ -23,6 +23,7 @@ namespace MexicanTennisSimulator
         private Player _playerOne;
         private Player _playerTwo;
         private Draw _draw;
+        private VirtualCourt _vCourt;
 
         public MainWindow()
         {
@@ -30,15 +31,20 @@ namespace MexicanTennisSimulator
         }
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
+
         {
-            //_ball = new Ball(ref stackpanelSimulation, 10, 10);
-            //_playerOne = new Player(ref stackpanelSimulation, 300, 300);
-            _draw = new Draw(ref canvasSimulation);
+            _vCourt = new VirtualCourt();
+            //_draw = new Draw(ref rCourt, ref _vCourt);
+            Draw.DrawCourt(rCourt);
+
+            _playerOne = new Player();
+            _vCourt.Add(_playerOne);
+            _playerOne.Move(5, new double[] { 50, 50 });
         }
 
         private void canvasSimulation_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _draw = new Draw(ref canvasSimulation);
+            Draw.DrawCourt(rCourt);
         }
     }
 }

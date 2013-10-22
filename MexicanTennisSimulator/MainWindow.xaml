@@ -17,8 +17,6 @@
             <ColumnDefinition x:Name="colOptions"/>
             <ColumnDefinition x:Name="colSimulation"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="canvasSimulation" Grid.Column="1" SizeChanged="canvasSimulation_SizeChanged">
-            <Rectangle Fill="#FFF4F4F5" Height="100" Stroke="Black" Width="100" StrokeThickness="20"/>
-        </Canvas>
+        <Canvas x:Name="rCourt" Grid.Column="1" SizeChanged="canvasSimulation_SizeChanged"/>
     </Grid>
 </dx:DXWindow>
