@@ -13,7 +13,11 @@ using System.Runtime.InteropServices;
 
 namespace MexicanTennisSimulator.Classes
 {
+<<<<<<< HEAD
+    class Ball : Entity
+=======
     class Ball : CourtElement
+>>>>>>> customShape
     {
         public Ball()
             : base()

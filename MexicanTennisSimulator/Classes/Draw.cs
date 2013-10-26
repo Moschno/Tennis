@@ -11,14 +11,11 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Draw
     {
-        private static VirtualCourt _vCourt;
         private static Canvas _rCourt;
         private static List<Shape> _courtObjects;
 
-        public Draw(ref Canvas rCourt, ref VirtualCourt vCourt)
+        public Draw(ref Canvas rCourt)
         {
-            _vCourt = vCourt;
-            //_rCourt = rCourt;
         }
 
         public static void DrawCourt(Canvas rCourt)
@@ -34,6 +31,10 @@ namespace MexicanTennisSimulator.Classes
             Brush colorLine = Brushes.White;
             Brush colorNet = Brushes.DimGray;
             Brush colorNetPost = Brushes.Black;
+
+            double test = _rCourt.Width;
+            double test2 = _rCourt.ActualWidth;
+            double test3 = _rCourt.MaxWidth;
 
             index = 0;
             _courtObjects.Add(new Rectangle());
@@ -140,8 +141,9 @@ namespace MexicanTennisSimulator.Classes
         {
         }
 
-        private void MoveEntity()
+        private void MoveEntity(ref CourtElement entity)
         { 
+
         }
     }
 }

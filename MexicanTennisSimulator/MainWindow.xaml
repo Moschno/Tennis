@@ -3,20 +3,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:MexicanTennisSimulator"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" x:Name="winMain"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:Classes="clr-namespace:MexicanTennisSimulator.Classes" x:Name="winMain"
     x:Class="MexicanTennisSimulator.MainWindow"
     Title="Mexican Tennis Simulator" Height="600" Width="1000"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen" MinWidth="1000" MinHeight="600"
     dx:ThemeManager.ThemeName="Office2010Black" Icon="Images\32_32_Sombrero.png" SmallIcon="Images/16_16_Sombrero.png" Loaded="winMain_Loaded"
     >
-    <dx:DXWindow.Resources>
-    </dx:DXWindow.Resources>
     <Grid x:Name="gridTennis">
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="colOptions"/>
             <ColumnDefinition x:Name="colSimulation"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="rCourt" Grid.Column="1" SizeChanged="canvasSimulation_SizeChanged"/>
+        <Canvas x:Name="rCourt" Grid.Column="1">
+        </Canvas>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="82,72,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="82,184,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
     </Grid>
 </dx:DXWindow>
