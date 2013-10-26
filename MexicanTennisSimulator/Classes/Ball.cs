@@ -13,20 +13,21 @@ using System.Runtime.InteropServices;
 
 namespace MexicanTennisSimulator.Classes
 {
-    class Ball : Entity, IEntity
+    class Ball : CourtElement
     {
         public Ball()
             : base()
         {
             Color = Brushes.Yellow;
-            _entity.Fill = Color;
-            _entity.Width = 8;
-            _entity.Height = 8;
+            this.Stroke = Color;
+            this.StrokeThickness = 8;
+            this.SetLeft(200.0);
+            this.SetTop(200.0);
         }
 
-        public override void Move(double durationInSeconds = 0, double[] targetPos = null)
+        public override void MoveTo(Point targetPos)
         {
-            SetTarget(durationInSeconds, targetPos);
+            TargetPos = targetPos;
             if (_durationTillTarget > 0)
             {
                 _sumAnimations = new Animation[4];
@@ -37,31 +38,40 @@ namespace MexicanTennisSimulator.Classes
             RefreshValues();
         }
 
-        private void SetSizeChangeAnimation(double multiplier, bool autoreverseOverDuration = true)
+        protected override Geometry DefiningGeometry
         {
-            double duration;
+            get
+            {
+                return (Geometry)new EllipseGeometry();
+            }
+        }
+
+        public void SetSizeChangeAnimation(double changeFactor, bool autoreverseOverDuration = true)
+        {
+            double duration = 5;
+            double totalDuration;
             var actAnimation = new Storyboard();
 
             if (autoreverseOverDuration)
-                duration = _durationTillTarget / 2;
+                totalDuration = duration / 2;
             else
-                duration = _durationTillTarget;
+                totalDuration = duration;
 
             var heightAnimation = new DoubleAnimation(
-                _entity.Height, _entity.Height * multiplier, new Duration(
+                this.Height, this.Height * changeFactor, new Duration(
                     TimeSpan.FromSeconds(duration)));
             heightAnimation.AutoReverse = autoreverseOverDuration;
             actAnimation.Children.Add(heightAnimation);
-            Storyboard.SetTarget(heightAnimation, _entity);
+            Storyboard.SetTarget(heightAnimation, this);
             Storyboard.SetTargetProperty(heightAnimation, new PropertyPath(Ellipse.HeightProperty));
             _sumAnimations[2] = new Animation(actAnimation.Begin);
 
             var widthAnimation = new DoubleAnimation(
-                _entity.Width, _entity.Width * multiplier, new Duration(
+                this.Width, this.Width * changeFactor, new Duration(
                     TimeSpan.FromSeconds(duration)));
             widthAnimation.AutoReverse = autoreverseOverDuration;
             actAnimation.Children.Add(widthAnimation);
-            Storyboard.SetTarget(widthAnimation, _entity);
+            Storyboard.SetTarget(widthAnimation, this);
             Storyboard.SetTargetProperty(widthAnimation, new PropertyPath(Ellipse.WidthProperty));
             _sumAnimations[3] = new Animation(actAnimation.Begin);
         }

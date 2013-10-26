@@ -66,10 +66,8 @@
   <ItemGroup>
     <Compile Include="Classes\Ball.cs" />
     <Compile Include="Classes\Draw.cs" />
-    <Compile Include="Classes\Entity.cs" />
-    <Compile Include="Classes\IEntity.cs" />
+    <Compile Include="Classes\CourtElement.cs" />
     <Compile Include="Classes\Player.cs" />
-    <Compile Include="Classes\VirtualCourt.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

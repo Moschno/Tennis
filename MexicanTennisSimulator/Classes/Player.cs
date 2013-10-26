@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace MexicanTennisSimulator.Classes
 {
-    class Player : Entity, IEntity
+    class Player : CourtElement
     {
         public Player()
             : base()
@@ -50,11 +50,25 @@ namespace MexicanTennisSimulator.Classes
             _entity.Fill = fiveColorRGB;
             _entity.Width = 50;
             _entity.Height = 50;
+            _entity.StrokeThickness = 10;
+
+            this.Width = 50;
+            this.Height = 50;
+            this.StrokeThickness = 100;
+            this.Stroke = fiveColorRGB;
         }
 
-        public override void Move(double durationInSeconds = 0, double[] targetPos = null)
+        protected override Geometry DefiningGeometry
         {
-            SetTarget(durationInSeconds, targetPos);
+            get
+            {
+                return (Geometry)new EllipseGeometry();
+            }
+        }
+
+        public override void MoveTo(Point targetPos)
+        {
+            TargetPos = targetPos;
             if (_durationTillTarget > 0)
             {
                 _sumAnimations = new Animation[2];

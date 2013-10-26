@@ -12,15 +12,19 @@ using DevExpress.Xpf.Core;
 
 namespace MexicanTennisSimulator.Classes
 {
-    abstract class Entity : IEntity
-    {
-        protected VirtualCourt _vcourt;
-        protected Animation[] _sumAnimations;
+    abstract class CourtElement : Shape
+    {         
+        public static readonly DependencyProperty ActPosProperty =
+            DependencyProperty.Register("ActPos", typeof(Point), typeof(CourtElement));     
+        public static readonly DependencyProperty TargetPosProperty =
+            DependencyProperty.Register("TargetPos", typeof(Point), typeof(CourtElement));
+
+
         protected Ellipse _entity;
+        protected Animation[] _sumAnimations;
         private Brush _color;
-        protected double[] _actualPos;
-        protected double[] _targetPos;
-        protected double _durationTillTarget;
+        private double maxSpeed = 5;
+        protected double _durationTillTarget = 5;
 
         public Brush Color
         {
@@ -28,20 +32,30 @@ namespace MexicanTennisSimulator.Classes
             set { _color = value; _entity.Fill = value; }
         }
 
-        protected delegate void Animation();
-        public abstract void Move(double durationInSeconds = 0, double[] targetPos = null);
+        public Point ActPos
+        {
+            get { return (Point)GetValue(ActPosProperty); }
+            set { SetValue(ActPosProperty, value); }
+        }
 
-        protected Entity()
+        public Point TargetPos
+        {
+            get { return (Point)GetValue(TargetPosProperty); }
+            set { SetValue(TargetPosProperty, value); }
+        }
+
+        protected delegate void Animation();
+        public abstract void MoveTo(Point targetPos);
+
+        protected CourtElement()
         {
             _entity = new Ellipse();
         }
 
         protected void RefreshValues()
         {
-            _durationTillTarget = 0;
             _sumAnimations = null;
-            _actualPos = _targetPos;
-            _actualPos = _targetPos;
+            this.ActPos = TargetPos;
         }
 
         protected void Go()
@@ -53,17 +67,10 @@ namespace MexicanTennisSimulator.Classes
             }
             else
             {
-                _entity.SetLeft(_targetPos[0]);
-                _entity.SetTop(_targetPos[1]);
+                this.SetLeft(TargetPos.X);
+                this.SetTop(TargetPos.Y);
+                this.ActPos = TargetPos;
             }  
-        }
-
-        protected void SetTarget(double durationInSeconds = 0, double[] targetPos = null)
-        {
-            _durationTillTarget = durationInSeconds;
-
-            if (targetPos != null)
-                _targetPos = targetPos;
         }
 
         protected void SetMoveAnimation()
@@ -71,17 +78,17 @@ namespace MexicanTennisSimulator.Classes
             var duration = new Duration(TimeSpan.FromSeconds(_durationTillTarget));
             var actAnimation = new Storyboard();
 
-            var moveRightAnimation = new DoubleAnimation(_actualPos[0], _targetPos[0], duration);
+            var moveRightAnimation = new DoubleAnimation(this.ActPos.X, this.TargetPos.X, duration);
             actAnimation.Children.Add(moveRightAnimation);
-            Storyboard.SetTarget(moveRightAnimation, _entity);
+            Storyboard.SetTarget(moveRightAnimation, this);
             Storyboard.SetTargetProperty(moveRightAnimation, new PropertyPath(Canvas.LeftProperty));
-            _sumAnimations[1] = new Animation(actAnimation.Begin);
-
-            var moveDownAnimation = new DoubleAnimation(_actualPos[1], _targetPos[1], duration);
-            actAnimation.Children.Add(moveDownAnimation);
-            Storyboard.SetTarget(moveDownAnimation, _entity);
-            Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
             _sumAnimations[0] = new Animation(actAnimation.Begin);
+
+            var moveDownAnimation = new DoubleAnimation(this.ActPos.Y, this.TargetPos.Y, duration);
+            actAnimation.Children.Add(moveDownAnimation);
+            Storyboard.SetTarget(moveDownAnimation, this);
+            Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
+            _sumAnimations[1] = new Animation(actAnimation.Begin);
         }
     }
 }
