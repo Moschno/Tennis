@@ -18,7 +18,7 @@ namespace MexicanTennisSimulator.Classes
         {
         }
 
-        public static void DrawCourt(Canvas rCourt)
+        public static void DrawCourt(ref Canvas rCourt)
         {
             _rCourt = rCourt;
             _courtObjects = new List<Shape>();
@@ -41,7 +41,7 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].Name = "court";
             _courtObjects[index].Width = _rCourt.ActualWidth;
             _courtObjects[index].Height = _rCourt.ActualHeight;
-            _courtObjects[index].StrokeThickness = 4;
+            _courtObjects[index].StrokeThickness = 0;
             _courtObjects[index].Stroke = Brushes.Black;
             _courtObjects[index].Fill = colorCourt;
 

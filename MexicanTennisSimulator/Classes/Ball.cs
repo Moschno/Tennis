@@ -15,14 +15,13 @@ namespace MexicanTennisSimulator.Classes
 {
     class Ball : CourtElement
     {
-        public Ball()
-            : base()
+        public Ball(ref Canvas rCourt)
+            : base(ref rCourt)
         {
-            Color = Brushes.Yellow;
             this.Stroke = Color;
             this.StrokeThickness = 8;
-            this.SetLeft(200.0);
-            this.SetTop(200.0);
+            //this.SetLeft(200.0);
+            //this.SetTop(200.0);
         }
 
         public override void MoveTo(Point targetPos)
@@ -36,14 +35,6 @@ namespace MexicanTennisSimulator.Classes
             }
             Go();
             RefreshValues();
-        }
-
-        protected override Geometry DefiningGeometry
-        {
-            get
-            {
-                return (Geometry)new EllipseGeometry();
-            }
         }
 
         public void SetSizeChangeAnimation(double changeFactor, bool autoreverseOverDuration = true)

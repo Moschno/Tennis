@@ -19,9 +19,9 @@ namespace MexicanTennisSimulator
 {
     public partial class MainWindow : DXWindow
     {
-        private Ball _ball = new Ball();
-        private Player _playerOne = new Player();
-        private Player _playerTwo = new Player();
+        private Ball _ball;
+        private Player _playerOne;
+        private Player _playerTwo;
 
         public MainWindow()
         {
@@ -30,24 +30,11 @@ namespace MexicanTennisSimulator
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            Draw.DrawCourt(rCourt);
+            Draw.DrawCourt(ref rCourt);
 
-            rCourt.Children.Add(_ball);
-            rCourt.Children.Add(_playerOne);
-            rCourt.Children.Add(_playerTwo);
-        }
-
-        private void canvasSimulation_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            _playerOne.MoveTo(new Point(100, 100));
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
+            _ball = new Ball(ref rCourt);
+            _playerOne = new Player(ref rCourt, ref _ball, Colors.Blue);
+            _playerTwo = new Player(ref rCourt, ref _ball, Colors.Red);
         }
     }
 }

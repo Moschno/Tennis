@@ -15,9 +15,8 @@
             <ColumnDefinition x:Name="colOptions"/>
             <ColumnDefinition x:Name="colSimulation"/>
         </Grid.ColumnDefinitions>
-        <Canvas x:Name="rCourt" Grid.Column="1">
+        <Canvas x:Name="rCourt" Grid.Column="1" Panel.ZIndex="2">
         </Canvas>
         <Button Content="Button" HorizontalAlignment="Left" Margin="82,72,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="82,184,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
     </Grid>
 </dx:DXWindow>

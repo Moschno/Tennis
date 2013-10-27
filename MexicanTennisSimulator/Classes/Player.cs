@@ -11,59 +11,40 @@ namespace MexicanTennisSimulator.Classes
 {
     class Player : CourtElement
     {
-        public Player()
-            : base()
+        public Player(ref Canvas rCourt, ref Ball ball, Color color)
+            : base(ref rCourt)
         {
             var radBrush = new RadialGradientBrush();
             // Create a radial gradient brush with five stops 
-            RadialGradientBrush fiveColorRGB = new RadialGradientBrush();
-            fiveColorRGB.GradientOrigin = new Point(0.5, 0.5);
-            fiveColorRGB.Center = new Point(0.5, 0.5);
+            RadialGradientBrush fourColorRGB = new RadialGradientBrush();
+            fourColorRGB.GradientOrigin = new Point(0.5, 0.5);
+            fourColorRGB.Center = new Point(0.5, 0.5);
 
             // Create and add Gradient stops
-            GradientStop blueGS = new GradientStop();
-            blueGS.Color = Colors.Blue;
-            blueGS.Offset = 0.0;
-            fiveColorRGB.GradientStops.Add(blueGS);
-
-            GradientStop orangeGS = new GradientStop();
-            orangeGS.Color = Colors.Orange;
-            orangeGS.Offset = 0.25;
-            fiveColorRGB.GradientStops.Add(orangeGS);
+            GradientStop customGS = new GradientStop();
+            customGS.Color = color;
+            customGS.Offset = 0.2;
+            fourColorRGB.GradientStops.Add(customGS);
 
             GradientStop yellowGS = new GradientStop();
             yellowGS.Color = Colors.Yellow;
-            yellowGS.Offset = 0.50;
-            fiveColorRGB.GradientStops.Add(yellowGS);
+            yellowGS.Offset = 0.3;
+            fourColorRGB.GradientStops.Add(yellowGS);
 
-            GradientStop greenGS = new GradientStop();
-            greenGS.Color = Colors.Green;
-            greenGS.Offset = 0.75;
-            fiveColorRGB.GradientStops.Add(greenGS);
+            GradientStop yellow2GS = new GradientStop();
+            yellow2GS.Color = Colors.Yellow;
+            yellow2GS.Offset = 0.7;
+            fourColorRGB.GradientStops.Add(yellow2GS);
 
-            GradientStop redGS = new GradientStop();
-            redGS.Color = Colors.Red;
-            redGS.Offset = 1.0;
-            fiveColorRGB.GradientStops.Add(redGS);
-
-            // Set Fill property of rectangle
-            _entity.Fill = fiveColorRGB;
-            _entity.Width = 50;
-            _entity.Height = 50;
-            _entity.StrokeThickness = 10;
+            GradientStop blackGS = new GradientStop();
+            blackGS.Color = Colors.Black;
+            blackGS.Offset = 1.1;
+            fourColorRGB.GradientStops.Add(blackGS);
 
             this.Width = 50;
             this.Height = 50;
-            this.StrokeThickness = 100;
-            this.Stroke = fiveColorRGB;
-        }
-
-        protected override Geometry DefiningGeometry
-        {
-            get
-            {
-                return (Geometry)new EllipseGeometry();
-            }
+            this.StrokeThickness = 40;
+            this.Stroke = fourColorRGB;
         }
 
         public override void MoveTo(Point targetPos)
