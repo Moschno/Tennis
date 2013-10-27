@@ -12,7 +12,12 @@ namespace MexicanTennisSimulator.Classes
     class Player : CourtElement
     {
         public Player(ref Canvas rCourt, ref Ball ball, Color color)
-            : base(ref rCourt)
+            : base(ref rCourt, color)
+        {
+            this.StrokeThickness = 40;
+        }
+
+        protected override void SetColor(Color color)
         {
             var radBrush = new RadialGradientBrush();
             // Create a radial gradient brush with five stops 
@@ -41,16 +46,13 @@ namespace MexicanTennisSimulator.Classes
             blackGS.Offset = 1.1;
             fourColorRGB.GradientStops.Add(blackGS);
 
-            this.Width = 50;
-            this.Height = 50;
-            this.StrokeThickness = 40;
             this.Stroke = fourColorRGB;
         }
 
         public override void MoveTo(Point targetPos)
         {
             TargetPos = targetPos;
-            if (_durationTillTarget > 0)
+            if (_speed > 0)
             {
                 _sumAnimations = new Animation[2];
                 SetMoveAnimation();

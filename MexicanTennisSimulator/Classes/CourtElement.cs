@@ -13,20 +13,27 @@ using DevExpress.Xpf.Core;
 namespace MexicanTennisSimulator.Classes
 {
     abstract class CourtElement : Shape
-    {         
+    {
+        protected override Geometry DefiningGeometry
+        {
+            get
+            {
+                return (Geometry)new EllipseGeometry();
+            }
+        }
+
         public static readonly DependencyProperty ActPosProperty =
-            DependencyProperty.Register("ActPos", typeof(Point), typeof(CourtElement));     
+            DependencyProperty.Register("ActPos", typeof(Point), typeof(CourtElement));
         public static readonly DependencyProperty TargetPosProperty =
             DependencyProperty.Register("TargetPos", typeof(Point), typeof(CourtElement));
         public static readonly DependencyProperty ElementColorProperty =
-                DependencyProperty.Register("Color", typeof(Colors), typeof(Player));
+            DependencyProperty.Register("Color", typeof(Color), typeof(Player)
+                , new PropertyMetadata(), ValidateValueCallback(SetColor
 
         protected Canvas _rCourt;
         protected Canvas _vCourt;
-        protected Ellipse _entity;
         protected Animation[] _sumAnimations;
-        private double maxSpeed = 5;
-        protected double _durationTillTarget = 5;
+        protected double _speed = 5;
 
         public Point ActPos
         {
@@ -40,33 +47,28 @@ namespace MexicanTennisSimulator.Classes
             set { SetValue(TargetPosProperty, value); }
         }
 
-        public Colors Color
+        public Color Color
         {
-            get { return (Colors)GetValue(ElementColorProperty); }
+            get { return (Color)GetValue(ElementColorProperty); }
             set { SetValue(ElementColorProperty, value); }
         }
 
         protected delegate void Animation();
+        protected abstract void SetColor(Color color);
         public abstract void MoveTo(Point targetPos);
 
-        protected override Geometry DefiningGeometry
+        protected CourtElement(ref Canvas rCourt, Color color)
         {
-            get
-            {
-                return (Geometry)new EllipseGeometry();
-            }
-        }
 
-        protected CourtElement(ref Canvas rCourt)
-        {
+            this.Color = color;
+            //SetColor(this.Color);
+
             _rCourt = rCourt;
             _rCourt.Children.Add(this);
+
             _vCourt = new Canvas();
             _vCourt.Width = 720;
             _vCourt.Height = 1560;
-
-
-            _entity = new Ellipse();
         }
 
         protected void RefreshValues()
@@ -77,7 +79,7 @@ namespace MexicanTennisSimulator.Classes
 
         protected void Go()
         {
-            if (_durationTillTarget > 0)
+            if (_speed > 0)
             {
                 Animation executeAnimation = (Animation)Delegate.Combine(_sumAnimations);
                 executeAnimation();
@@ -92,7 +94,7 @@ namespace MexicanTennisSimulator.Classes
 
         protected void SetMoveAnimation()
         {
-            var duration = new Duration(TimeSpan.FromSeconds(_durationTillTarget));
+            var duration = new Duration(TimeSpan.FromSeconds(_speed));
             var rCourtTargetPos = new Point();
             rCourtTargetPos.X = TargetPos.X * _rCourt.ActualWidth / _vCourt.Width;
             rCourtTargetPos.Y = TargetPos.Y * _rCourt.ActualHeight / _vCourt.Height;

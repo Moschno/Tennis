@@ -15,19 +15,21 @@ namespace MexicanTennisSimulator.Classes
 {
     class Ball : CourtElement
     {
-        public Ball(ref Canvas rCourt)
-            : base(ref rCourt)
+        public Ball(ref Canvas rCourt, Color color)
+            : base(ref rCourt, color)
         {
-            this.Stroke = Color;
             this.StrokeThickness = 8;
-            //this.SetLeft(200.0);
-            //this.SetTop(200.0);
+        }
+
+        protected override void SetColor(Color color)
+        {
+            this.Stroke = new SolidColorBrush(color);
         }
 
         public override void MoveTo(Point targetPos)
         {
             TargetPos = targetPos;
-            if (_durationTillTarget > 0)
+            if (_speed > 0)
             {
                 _sumAnimations = new Animation[4];
                 SetMoveAnimation();

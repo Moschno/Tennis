@@ -30,11 +30,14 @@ namespace MexicanTennisSimulator
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            Draw.DrawCourt(ref rCourt);
+            Draw.DrawCourt(ref _rCourt);
 
-            _ball = new Ball(ref rCourt);
-            _playerOne = new Player(ref rCourt, ref _ball, Colors.Blue);
-            _playerTwo = new Player(ref rCourt, ref _ball, Colors.Red);
+            _ball = new Ball(ref _rCourt, Colors.Yellow);
+            _playerOne = new Player(ref _rCourt, ref _ball, Colors.Blue);
+            _playerTwo = new Player(ref _rCourt, ref _ball, Colors.Red);
+
+            _playerOne.MoveTo(new Point(100, 200));
+            _playerTwo.MoveTo(new Point(200, 100));
         }
     }
 }
