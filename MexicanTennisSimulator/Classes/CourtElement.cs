@@ -36,7 +36,16 @@ namespace MexicanTennisSimulator.Classes
             myCourtElement.SetColor((Color)e.NewValue);
         }
 
-        protected int _ownCourtIndex;
+        protected static void OnPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var myCourtElement = (CourtElement)d;
+            var target = (Point)e.NewValue;            
+            //myCourtElement.MoveTo
+        }
+
+        protected bool _playerOne;
+        protected bool _playerTwo;
+        protected bool _gameBall;
         protected Canvas _rCourt;
         protected Canvas _vCourt;
         protected Animation[] _sumAnimations;
@@ -48,7 +57,7 @@ namespace MexicanTennisSimulator.Classes
             set { SetValue(ActPosProperty, value); }
         }
 
-        public Point TargetPos
+        public Point vTargetPos
         {
             get { return (Point)GetValue(TargetPosProperty); }
             set { SetValue(TargetPosProperty, value); }
@@ -60,16 +69,37 @@ namespace MexicanTennisSimulator.Classes
             set { SetValue(ElementColorProperty, value); }
         }
 
+        protected bool PlayerOne
+        {
+            get { return _playerOne; }
+        }
+
+        protected bool PlayerTwo
+        {
+            get { return _playerTwo; }
+        }
+
+        protected bool GameBall
+        {
+            get { return _gameBall; }
+        }
+
         protected delegate void Animation();
         protected abstract void SetColor(Color color);
-        public abstract void MoveTo(Point targetPos);
+        public abstract void MoveTo(int targetPosX, int targetPosY, bool instant = false);
 
         protected CourtElement(ref Canvas rCourt, Color color)
         {
             this.Color = color;
 
             _rCourt = rCourt;
-            _ownCourtIndex = _rCourt.Children.Add(this);
+            int ownCourtIndex = _rCourt.Children.Add(this);
+            if (ownCourtIndex == 10)
+                _gameBall = true;
+            else if (ownCourtIndex == 11)
+                _playerOne = true;
+            else if (ownCourtIndex == 12)
+                _playerTwo = true;
 
             _vCourt = new Canvas();
             _vCourt.Width = 720;
@@ -79,48 +109,41 @@ namespace MexicanTennisSimulator.Classes
         protected void RefreshValues()
         {
             _sumAnimations = null;
-            this.ActPos = TargetPos;
+            this.ActPos = vTargetPos;
         }
 
         protected void Go()
         {
-            if (_speed > 0)
-            {
-                Animation executeAnimation = (Animation)Delegate.Combine(_sumAnimations);
-                executeAnimation();
-            }
-            else
-            {
-                this.SetLeft(TargetPos.X);
-                this.SetTop(TargetPos.Y);
-                this.ActPos = TargetPos;
-            }  
+            Animation executeAnimation = (Animation)Delegate.Combine(_sumAnimations);
+            executeAnimation();
         }
 
         protected void SetMoveAnimation()
         {
             var duration = new Duration(TimeSpan.FromSeconds(_speed));
-            var rCourtTargetPos = new Point();
-            rCourtTargetPos.X = TargetPos.X * _rCourt.ActualWidth / _vCourt.Width;
-            rCourtTargetPos.Y = TargetPos.Y * _rCourt.ActualHeight / _vCourt.Height;
+            var rTargetPos = Get_rCourtTargetPos(vTargetPos);
             var actAnimation = new Storyboard();
 
-            var moveRightAnimation = new DoubleAnimation(this.ActPos.X, rCourtTargetPos.X, duration);
+            var moveRightAnimation = new DoubleAnimation(this.ActPos.X, rTargetPos.X, duration);
             actAnimation.Children.Add(moveRightAnimation);
             Storyboard.SetTarget(moveRightAnimation, this);
             Storyboard.SetTargetProperty(moveRightAnimation, new PropertyPath(Canvas.LeftProperty));
             _sumAnimations[0] = new Animation(actAnimation.Begin);
 
-            var moveDownAnimation = new DoubleAnimation(this.ActPos.Y, rCourtTargetPos.Y, duration);
+            var moveDownAnimation = new DoubleAnimation(this.ActPos.Y, rTargetPos.Y, duration);
             actAnimation.Children.Add(moveDownAnimation);
             Storyboard.SetTarget(moveDownAnimation, this);
             Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
             _sumAnimations[1] = new Animation(actAnimation.Begin);
         }
 
-        public virtual void StartGame()
+        protected Point Get_rCourtTargetPos(Point vTargetPos)
         {
-            
+            var rTargetPos = new Point();
+            rTargetPos.X = vTargetPos.X * _rCourt.ActualWidth / _vCourt.Width + _rCourt.ActualWidth / 2;
+            rTargetPos.Y = (-1) * vTargetPos.Y * _rCourt.ActualHeight / _vCourt.Height + _rCourt.ActualHeight / 2;
+
+            return rTargetPos;
         }
     }
 }

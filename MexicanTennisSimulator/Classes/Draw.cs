@@ -14,10 +14,6 @@ namespace MexicanTennisSimulator.Classes
         private static Canvas _rCourt;
         private static List<Shape> _courtObjects;
 
-        public Draw(ref Canvas rCourt)
-        {
-        }
-
         public static void DrawCourt(ref Canvas rCourt)
         {
             _rCourt = rCourt;
@@ -135,15 +131,6 @@ namespace MexicanTennisSimulator.Classes
 
             foreach (var item in _courtObjects)
                 _rCourt.Children.Add(item);
-        }
-
-        public void DrawEntity()
-        {
-        }
-
-        private void MoveEntity(ref CourtElement entity)
-        { 
-
         }
     }
 }

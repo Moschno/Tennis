@@ -62,6 +62,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StructsEnums.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Ball.cs" />

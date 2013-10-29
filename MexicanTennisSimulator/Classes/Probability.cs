@@ -14,9 +14,10 @@ namespace MexicanTennisSimulator.Classes
             if (getTrueProbability < 0 || getTrueProbability > 100)
                 throw new ArgumentOutOfRangeException("trueProbabiliy", "Der Wert von 'trueProbabiliy' muss zwischen 0 und 100 liegen.");
 
-            if (getTrueProbability < 0.0001)
-                throw new ArgumentOutOfRangeException("trueProbabiliy", "Es sind maximal 4 Nachkommastellen erlaubt.");
             string stringNumber = getTrueProbability.ToString();
+            if (stringNumber.IndexOf("E") != -1)
+                throw new ArgumentOutOfRangeException("trueProbabiliy", "Zu viele hintereinander liegende Nullen in den Nachkommastellen.");
+            
             int indexPoint = stringNumber.IndexOf(",");
             if (indexPoint != -1)
 	        {
