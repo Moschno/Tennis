@@ -68,6 +68,7 @@
     <Compile Include="Classes\Draw.cs" />
     <Compile Include="Classes\CourtElement.cs" />
     <Compile Include="Classes\Player.cs" />
+    <Compile Include="Classes\Probability.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

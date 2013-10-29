@@ -11,10 +11,12 @@ namespace MexicanTennisSimulator.Classes
 {
     class Player : CourtElement
     {
-        public Player(ref Canvas rCourt, ref Ball ball, Color color)
+        Player _otherPlayer;
+        public Player(ref Canvas rCourt, Color color)
             : base(ref rCourt, color)
         {
             this.StrokeThickness = 40;
+            this.SetValue(Panel.ZIndexProperty, 3);
         }
 
         protected override void SetColor(Color color)
@@ -59,6 +61,20 @@ namespace MexicanTennisSimulator.Classes
             }
             Go();
             RefreshValues();
+        }
+
+        public override void StartGame()
+        {
+            if (_ownCourtIndex == 11)
+                _otherPlayer = (Player)_rCourt.Children[12];
+            else if (_ownCourtIndex == 12)
+                _otherPlayer = (Player)_rCourt.Children[11];
+            else
+                throw new Exception("Es wurden die Kinds-Objekte des rCourt falsch zugeordnet."
+                                    + "\n_rCourt.Children.Add[10] -> immer der Spielball"
+                                    + "\n_rCourt.Children.Add[11] -> immer Spieler 1"
+                                    + "\n_rCourt.Children.Add[12] -> immer Spieler 2"
+                                    + "\nJeder weitere hinzugefügte Ball/Spieler wirft diese Exception");
         }
     }
 }

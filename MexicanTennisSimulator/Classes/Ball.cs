@@ -19,6 +19,7 @@ namespace MexicanTennisSimulator.Classes
             : base(ref rCourt, color)
         {
             this.StrokeThickness = 8;
+            this.SetZIndex(2);
         }
 
         protected override void SetColor(Color color)

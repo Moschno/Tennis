@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using DevExpress.Xpf.Core;
 using MexicanTennisSimulator.Classes;
 using System.Windows.Media.Animation;
+using System.Security.Cryptography;
 
 
 namespace MexicanTennisSimulator
@@ -33,11 +34,28 @@ namespace MexicanTennisSimulator
             Draw.DrawCourt(ref _rCourt);
 
             _ball = new Ball(ref _rCourt, Colors.Yellow);
-            _playerOne = new Player(ref _rCourt, ref _ball, Colors.Blue);
-            _playerTwo = new Player(ref _rCourt, ref _ball, Colors.Red);
+            _playerOne = new Player(ref _rCourt, Colors.Blue);
+            _playerTwo = new Player(ref _rCourt, Colors.Red);
 
             _playerOne.MoveTo(new Point(100, 200));
             _playerTwo.MoveTo(new Point(200, 100));
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            tbZufallszahl.Text = "false";
+            int count = 1;
+            while (!Probability.GetTrueOrFalse(0.0001))
+            {
+                count++;
+            }
+            tbZufallszahl.Text = "true";
+            tbZufallszahl2.Text = count.ToString();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            tbZufallszahl2.Text = Probability.GetTrueOrFalse(10.00).ToString();
         }
     }
 }

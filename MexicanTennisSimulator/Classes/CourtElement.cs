@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using DevExpress.Xpf.Core;
+using System.ComponentModel;
 
 namespace MexicanTennisSimulator.Classes
 {
@@ -27,9 +28,15 @@ namespace MexicanTennisSimulator.Classes
         public static readonly DependencyProperty TargetPosProperty =
             DependencyProperty.Register("TargetPos", typeof(Point), typeof(CourtElement));
         public static readonly DependencyProperty ElementColorProperty =
-            DependencyProperty.Register("Color", typeof(Color), typeof(Player)
-                , new PropertyMetadata(), ValidateValueCallback(SetColor
+            DependencyProperty.Register("Color", typeof(Color), typeof(CourtElement), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnColorChanged)));
 
+        protected static void OnColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var myCourtElement = (CourtElement)d;
+            myCourtElement.SetColor((Color)e.NewValue);
+        }
+
+        protected int _ownCourtIndex;
         protected Canvas _rCourt;
         protected Canvas _vCourt;
         protected Animation[] _sumAnimations;
@@ -59,12 +66,10 @@ namespace MexicanTennisSimulator.Classes
 
         protected CourtElement(ref Canvas rCourt, Color color)
         {
-
             this.Color = color;
-            //SetColor(this.Color);
 
             _rCourt = rCourt;
-            _rCourt.Children.Add(this);
+            _ownCourtIndex = _rCourt.Children.Add(this);
 
             _vCourt = new Canvas();
             _vCourt.Width = 720;
@@ -111,6 +116,11 @@ namespace MexicanTennisSimulator.Classes
             Storyboard.SetTarget(moveDownAnimation, this);
             Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
             _sumAnimations[1] = new Animation(actAnimation.Begin);
+        }
+
+        public virtual void StartGame()
+        {
+            
         }
     }
 }
