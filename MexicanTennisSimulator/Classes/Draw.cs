@@ -28,10 +28,6 @@ namespace MexicanTennisSimulator.Classes
             Brush colorNet = Brushes.DimGray;
             Brush colorNetPost = Brushes.Black;
 
-            double test = _rCourt.Width;
-            double test2 = _rCourt.ActualWidth;
-            double test3 = _rCourt.MaxWidth;
-
             index = 0;
             _courtObjects.Add(new Rectangle());
             _courtObjects[index].Name = "court";
@@ -44,8 +40,8 @@ namespace MexicanTennisSimulator.Classes
             index = 1;
             _courtObjects.Add(new Rectangle());
             _courtObjects[index].Name = "outerLines";
-            _courtObjects[index].Width = _rCourt.ActualWidth / 2;
-            _courtObjects[index].Height = _rCourt.ActualHeight / 2;
+            _courtObjects[index].Width = _rCourt.ActualWidth / 2 + strokeThicknessLines;
+            _courtObjects[index].Height = _rCourt.ActualHeight / 2 + strokeThicknessLines;
             _courtObjects[index].StrokeThickness = strokeThicknessLines;
             _courtObjects[index].Stroke = colorLine;
             _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _courtObjects[index].Width / 2);
@@ -58,7 +54,7 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].Height = _rCourt.ActualHeight / 2;
             _courtObjects[index].StrokeThickness = strokeThicknessLines;
             _courtObjects[index].Stroke = colorLine;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 14 - strokeThicknessLines / 2);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 13.5 - strokeThicknessLines / 2);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 - _rCourt.ActualHeight / 2 / 2);
 
             index = 3;
@@ -68,27 +64,27 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].Height = _rCourt.ActualHeight / 2;
             _courtObjects[index].StrokeThickness = strokeThicknessLines;
             _courtObjects[index].Stroke = colorLine;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 + _rCourt.ActualWidth / 2 / 36 * 14 - strokeThicknessLines / 2);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 + _rCourt.ActualWidth / 2 / 36 * 13.5 - strokeThicknessLines / 2);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 - _rCourt.ActualHeight / 2 / 2);
 
             index = 4;
             _courtObjects.Add(new Rectangle());
             _courtObjects[index].Name = "upperServiceLine";
-            _courtObjects[index].Width = _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 8;
+            _courtObjects[index].Width = _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 9;
             _courtObjects[index].Height = strokeThicknessLines;
             _courtObjects[index].StrokeThickness = strokeThicknessLines;
             _courtObjects[index].Stroke = colorLine;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 14);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 13.5);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 - _rCourt.ActualHeight / 2 / 78 * 21 - strokeThicknessLines / 2);
 
             index = 5;
             _courtObjects.Add(new Rectangle());
             _courtObjects[index].Name = "bottomServiceLine";
-            _courtObjects[index].Width = _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 8;
+            _courtObjects[index].Width = _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 9;
             _courtObjects[index].Height = strokeThicknessLines;
             _courtObjects[index].StrokeThickness = strokeThicknessLines;
             _courtObjects[index].Stroke = colorLine;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 14);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 13.5);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 + _rCourt.ActualHeight / 2 / 78 * 21 - strokeThicknessLines / 2);
 
             index = 6;
@@ -104,11 +100,11 @@ namespace MexicanTennisSimulator.Classes
             index = 7;
             _courtObjects.Add(new Rectangle());
             _courtObjects[index].Name = "net";
-            _courtObjects[index].Width = _rCourt.ActualWidth / 2 + addNetLength;
+            _courtObjects[index].Width = _rCourt.ActualWidth / 2 + addNetLength + strokeThicknessLines;
             _courtObjects[index].Height = strokeThicknessNet;
             _courtObjects[index].StrokeThickness = strokeThicknessNet;
             _courtObjects[index].Stroke = colorNet;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 18 - addNetLength / 2);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 18 - addNetLength / 2 - strokeThicknessLines / 2);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 - strokeThicknessNet / 2);
 
             index = 8;
@@ -117,7 +113,7 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].Width = postDiameter;
             _courtObjects[index].Height = postDiameter;
             _courtObjects[index].Fill = colorNetPost;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 18 - addNetLength / 2 - _courtObjects[index].Width / 2);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 - _rCourt.ActualWidth / 2 / 36 * 18 - addNetLength / 2 - strokeThicknessLines / 2 - _courtObjects[index].Width / 2);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 - strokeThicknessNet / 2 - _courtObjects[index].Height / 2);
 
             index = 9;
@@ -126,7 +122,7 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].Width = postDiameter;
             _courtObjects[index].Height = postDiameter;
             _courtObjects[index].Fill = colorNetPost;
-            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 + _rCourt.ActualWidth / 2 / 36 * 18 + addNetLength / 2 - _courtObjects[index].Width / 2);
+            _courtObjects[index].SetValue(Canvas.LeftProperty, _rCourt.ActualWidth / 2 + _rCourt.ActualWidth / 2 / 36 * 18 + addNetLength / 2 + strokeThicknessLines / 2 - _courtObjects[index].Width / 2);
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 + strokeThicknessNet / 2 - _courtObjects[index].Height / 2);
 
             foreach (var item in _courtObjects)

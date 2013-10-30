@@ -13,7 +13,9 @@ namespace MexicanTennisSimulator.Classes
     sealed class Player : CourtElement
     {
         private Player _otherPlayer;
-        private Ball _gameBall;
+        private Ball _ball;
+        private bool _service;
+        private bool _upperSide;
 
         public Player(ref Canvas rCourt, Color color)
             : base(ref rCourt, color)
@@ -54,10 +56,10 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = fourColorRGB;
         }
 
-        public override void MoveTo(int targetPosX, int targetPosY, bool instant = false)
+        public override void MoveTo(int targetPosX, int targetPosY, double speed)
         {
             vTargetPos = new Point(targetPosX, targetPosY);
-            if (!instant)
+            if (speed > 0)
             {
                 _sumAnimations = new Animation[2];
                 SetMoveAnimation();
@@ -66,11 +68,11 @@ namespace MexicanTennisSimulator.Classes
             }
             else
             {
-                var rTargetPos = Get_rCourtTargetPos(vTargetPos);
+                var rTargetPos = Get_rCourtPos(vTargetPos);
                 this.SetValue(Canvas.LeftProperty, rTargetPos.X);
                 this.SetValue(Canvas.TopProperty, rTargetPos.Y);
             }
-            this.ActPos = vTargetPos;
+            this.vActPos = vTargetPos;
         }
 
         public void Prepare4Rally(Rally rallyProps)
@@ -78,26 +80,38 @@ namespace MexicanTennisSimulator.Classes
             if (_playerOne)
             {
                 _otherPlayer = (Player)_rCourt.Children[12];
-                _gameBall = (Ball)_rCourt.Children[10];
-                if (rallyProps.Side == RallyProp.UpperFieldPlayerOne)
-                    this.MoveTo(-100, 400, true);
+                _ball = (Ball)_rCourt.Children[10];
+                if (rallyProps.UpperSide == Players.One)
+                {
+                    _upperSide = true;
+                    this.MoveTo(-100, 400, 0);
+                }
                 else
-                    this.MoveTo(100, -400, true);
+                    this.MoveTo(100, -400, 0);
 
-                if (rallyProps.Service == RallyProp.ServicePlayerOne)
-                    this._gameBall.MoveTo((int)this.ActPos.X, (int)this.ActPos.Y, true);
+                if (rallyProps.Service == Players.One)
+                {
+                    _service = true;
+                    this._ball.MoveTo((int)this.vActPos.X, (int)this.vActPos.Y, 0);
+                }
             }
             else if (_playerTwo)
             {
                 _otherPlayer = (Player)_rCourt.Children[11];
-                _gameBall = (Ball)_rCourt.Children[10];
-                if (rallyProps.Side == RallyProp.UpperFieldPlayerTwo)
-                    this.MoveTo(-100, 400, true);
+                _ball = (Ball)_rCourt.Children[10];
+                if (rallyProps.UpperSide == Players.Two)
+                {
+                    _upperSide = true;
+                    this.MoveTo(-100, 400, 0);
+                }
                 else
-                    this.MoveTo(100, -400, true);
+                    this.MoveTo(100, -400, 0);
 
-                if (rallyProps.Service == RallyProp.ServicePlayerTwo)
-                    this._gameBall.MoveTo((int)this.ActPos.X, (int)this.ActPos.Y, true);
+                if (rallyProps.Service == Players.Two)
+                {
+                    _service = true;
+                    this._ball.MoveTo((int)this.vActPos.X, (int)this.vActPos.Y, 0);
+                }
             }
             else
                 throw new Exception("Dies ist kein Spieler auf dem rCourt bzw. es wurden die Kinds-Objekte des rCourt falsch zugeordnet."
@@ -109,7 +123,27 @@ namespace MexicanTennisSimulator.Classes
 
         public void StartRally()
         {
-            
+            if (_service)
+            {
+                this.DoService();
+            }
+        }
+
+        private void DoService()
+        {
+            if (_upperSide)
+            {
+                BatBall(-135, -390, 1);
+            }
+            else
+            {
+                BatBall(-135, 390, 1);
+            }
+        }
+
+        private void BatBall(int vTargetPosX, int vTargetPosY, int strength)
+        {
+            _ball.GotBated(vTargetPosX, vTargetPosY, strength);
         }
     }
 }

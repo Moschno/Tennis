@@ -23,10 +23,10 @@ namespace MexicanTennisSimulator.Classes
             }
         }
 
-        public static readonly DependencyProperty ActPosProperty =
-            DependencyProperty.Register("ActPos", typeof(Point), typeof(CourtElement));
-        public static readonly DependencyProperty TargetPosProperty =
-            DependencyProperty.Register("TargetPos", typeof(Point), typeof(CourtElement));
+        public static readonly DependencyProperty vActPosProperty =
+            DependencyProperty.Register("vActPos", typeof(Point), typeof(CourtElement));
+        public static readonly DependencyProperty vTargetPosProperty =
+            DependencyProperty.Register("vTargetPos", typeof(Point), typeof(CourtElement));
         public static readonly DependencyProperty ElementColorProperty =
             DependencyProperty.Register("Color", typeof(Color), typeof(CourtElement), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnColorChanged)));
 
@@ -51,16 +51,16 @@ namespace MexicanTennisSimulator.Classes
         protected Animation[] _sumAnimations;
         protected double _speed = 5;
 
-        public Point ActPos
+        public Point vActPos
         {
-            get { return (Point)GetValue(ActPosProperty); }
-            set { SetValue(ActPosProperty, value); }
+            get { return (Point)GetValue(vActPosProperty); }
+            set { SetValue(vActPosProperty, value); }
         }
 
         public Point vTargetPos
         {
-            get { return (Point)GetValue(TargetPosProperty); }
-            set { SetValue(TargetPosProperty, value); }
+            get { return (Point)GetValue(vTargetPosProperty); }
+            set { SetValue(vTargetPosProperty, value); }
         }
 
         public Color Color
@@ -86,7 +86,7 @@ namespace MexicanTennisSimulator.Classes
 
         protected delegate void Animation();
         protected abstract void SetColor(Color color);
-        public abstract void MoveTo(int targetPosX, int targetPosY, bool instant = false);
+        public abstract void MoveTo(int targetPosX, int targetPosY, double time);
 
         protected CourtElement(ref Canvas rCourt, Color color)
         {
@@ -109,7 +109,7 @@ namespace MexicanTennisSimulator.Classes
         protected void RefreshValues()
         {
             _sumAnimations = null;
-            this.ActPos = vTargetPos;
+            this.vActPos = vTargetPos;
         }
 
         protected void Go()
@@ -121,29 +121,30 @@ namespace MexicanTennisSimulator.Classes
         protected void SetMoveAnimation()
         {
             var duration = new Duration(TimeSpan.FromSeconds(_speed));
-            var rTargetPos = Get_rCourtTargetPos(vTargetPos);
+            var rActPos = Get_rCourtPos(vActPos);
+            var rTargetPos = Get_rCourtPos(vTargetPos);
             var actAnimation = new Storyboard();
 
-            var moveRightAnimation = new DoubleAnimation(this.ActPos.X, rTargetPos.X, duration);
+            var moveRightAnimation = new DoubleAnimation(rActPos.X, rTargetPos.X, duration);
             actAnimation.Children.Add(moveRightAnimation);
             Storyboard.SetTarget(moveRightAnimation, this);
             Storyboard.SetTargetProperty(moveRightAnimation, new PropertyPath(Canvas.LeftProperty));
             _sumAnimations[0] = new Animation(actAnimation.Begin);
 
-            var moveDownAnimation = new DoubleAnimation(this.ActPos.Y, rTargetPos.Y, duration);
+            var moveDownAnimation = new DoubleAnimation(rActPos.Y, rTargetPos.Y, duration);
             actAnimation.Children.Add(moveDownAnimation);
             Storyboard.SetTarget(moveDownAnimation, this);
             Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
             _sumAnimations[1] = new Animation(actAnimation.Begin);
         }
 
-        protected Point Get_rCourtTargetPos(Point vTargetPos)
+        protected Point Get_rCourtPos(Point vTargetPos)
         {
-            var rTargetPos = new Point();
-            rTargetPos.X = vTargetPos.X * _rCourt.ActualWidth / _vCourt.Width + _rCourt.ActualWidth / 2;
-            rTargetPos.Y = (-1) * vTargetPos.Y * _rCourt.ActualHeight / _vCourt.Height + _rCourt.ActualHeight / 2;
+            var rPos = new Point();
+            rPos.X = vTargetPos.X * _rCourt.ActualWidth / _vCourt.Width + _rCourt.ActualWidth / 2;
+            rPos.Y = (-1) * vTargetPos.Y * _rCourt.ActualHeight / _vCourt.Height + _rCourt.ActualHeight / 2;
 
-            return rTargetPos;
+            return rPos;
         }
     }
 }

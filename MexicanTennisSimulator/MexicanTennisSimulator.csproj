@@ -107,7 +107,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\CourtDimensions.png" />
+    <Resource Include="Images\vCourtDimensions.png" />
     <Resource Include="Images\32_32_Sombrero.png" />
     <Resource Include="Images\16_16_Sombrero.png" />
     <Resource Include="Images\16_16_TennisBall.png" />

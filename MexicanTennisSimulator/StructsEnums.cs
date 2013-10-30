@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace MexicanTennisSimulator
 {
-    public struct Rally { public RallyProp Service; public RallyProp Side; };
-    public enum RallyProp { ServicePlayerOne, ServicePlayerTwo, UpperFieldPlayerOne, UpperFieldPlayerTwo};
+    public struct Rally { public Players Service; public Players UpperSide; };
+    public enum Players { One, Two };
 }

@@ -38,8 +38,8 @@ namespace MexicanTennisSimulator
             _playerTwo = new Player(ref _rCourt, Colors.Red);
 
             Rally rallyProps;
-            rallyProps.Service = RallyProp.ServicePlayerOne;
-            rallyProps.Side = RallyProp.UpperFieldPlayerOne;
+            rallyProps.Service = Players.One;
+            rallyProps.UpperSide = Players.One;
 
             _playerOne.Prepare4Rally(rallyProps);
             _playerTwo.Prepare4Rally(rallyProps);
@@ -47,6 +47,8 @@ namespace MexicanTennisSimulator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            _playerOne.StartRally();
+            _playerTwo.StartRally();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
