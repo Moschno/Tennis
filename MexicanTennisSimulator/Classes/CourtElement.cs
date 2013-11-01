@@ -86,7 +86,7 @@ namespace MexicanTennisSimulator.Classes
 
         protected delegate void Animation();
         protected abstract void SetColor(Color color);
-        public abstract void MoveTo(int targetPosX, int targetPosY, double time);
+        public abstract void MoveTo(double targetPosX, double targetPosY, double time);
 
         protected CourtElement(ref Canvas rCourt, Color color)
         {

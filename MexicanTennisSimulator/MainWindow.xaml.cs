@@ -53,6 +53,7 @@ namespace MexicanTennisSimulator
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            _playerOne.MoveTo(0, 0, 5);
         }
     }
 }

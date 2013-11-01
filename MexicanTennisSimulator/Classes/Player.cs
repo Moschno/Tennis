@@ -14,8 +14,24 @@ namespace MexicanTennisSimulator.Classes
     {
         private Player _otherPlayer;
         private Ball _ball;
+        private bool _gameRunning;
         private bool _service;
         private bool _upperSide;
+        private int _maxBatStrength = 1;
+        private double _minGlobalStdBatSpeed_KmH = 70;
+        private double _maxGlobalStdBatSpeed_KmH = 130;
+
+        public int PlayerStrength
+        {
+            get { return _maxBatStrength; }
+            set 
+            {
+                if (!_gameRunning)
+                    _maxBatStrength = value;  
+                else
+                    throw new InvalidOperationException("Der Wert kann während der Simulation nicht geändert werden.");
+            }
+        }
 
         public Player(ref Canvas rCourt, Color color)
             : base(ref rCourt, color)
@@ -56,7 +72,7 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = fourColorRGB;
         }
 
-        public override void MoveTo(int targetPosX, int targetPosY, double speed)
+        public override void MoveTo(double targetPosX, double targetPosY, double speed)
         {
             vTargetPos = new Point(targetPosX, targetPosY);
             if (speed > 0)
@@ -92,7 +108,7 @@ namespace MexicanTennisSimulator.Classes
                 if (rallyProps.Service == Players.One)
                 {
                     _service = true;
-                    this._ball.MoveTo((int)this.vActPos.X, (int)this.vActPos.Y, 0);
+                    this._ball.MoveTo(this.vActPos.X, this.vActPos.Y, 0);
                 }
             }
             else if (_playerTwo)
@@ -110,7 +126,7 @@ namespace MexicanTennisSimulator.Classes
                 if (rallyProps.Service == Players.Two)
                 {
                     _service = true;
-                    this._ball.MoveTo((int)this.vActPos.X, (int)this.vActPos.Y, 0);
+                    this._ball.MoveTo(this.vActPos.X, this.vActPos.Y, 0);
                 }
             }
             else
@@ -125,7 +141,7 @@ namespace MexicanTennisSimulator.Classes
         {
             if (_service)
             {
-                this.DoService();
+                DoService();
             }
         }
 
@@ -133,17 +149,25 @@ namespace MexicanTennisSimulator.Classes
         {
             if (_upperSide)
             {
-                BatBall(-135, -390, 1);
+                BatBall(100, -210, _maxBatStrength);
             }
             else
             {
-                BatBall(-135, 390, 1);
+                BatBall(-100, 210, _maxBatStrength);
             }
         }
 
-        private void BatBall(int vTargetPosX, int vTargetPosY, int strength)
+        private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
         {
-            _ball.GotBated(vTargetPosX, vTargetPosY, strength);
+            double batSpeed_ms = CalcBatSpeed_ms(strength);
+            _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms);
+        }
+
+        private double CalcBatSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.
+        {
+            double interval = (_maxGlobalStdBatSpeed_KmH - _minGlobalStdBatSpeed_KmH) / 10;
+            double batSpeed = _minGlobalStdBatSpeed_KmH / 3.6 + strength * interval;
+            return batSpeed;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Ball : CourtElement
     {
+        int CountAnimations = 0;
         public Ball(ref Canvas rCourt, Color color)
             : base(ref rCourt, color)
         {
@@ -27,41 +28,56 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = new SolidColorBrush(color);
         }
 
-        public override void MoveTo(int vTargetPosX, int vTargetPosY, double time)
+        public override void MoveTo(double vTargetPosX, double vTargetPosY, double time)
         {
-            if (time < 0 || time > 10)
-                throw new ArgumentOutOfRangeException("speed", "Der Wert von 'speed' muss zwischen 0 und 10 liegen. 0 steht für sofortigen Standortwechsel");
-
-            _speed = time;
+            _sumAnimations = null;
             vTargetPos = new Point(vTargetPosX, vTargetPosY);
-            if (time > 0)
+            double distanceX = vTargetPosX - vActPos.X;
+            double distanceY = vTargetPosY - vActPos.Y;
+            _speed = time;
+            if (_speed > 0)
             {
                 _sumAnimations = new Animation[3];
                 SetMoveAnimation();
-                SetSizeChangeAnimation(1.5);
+                SetSizeChangeAnimation(1.3);
+                var sb = (Storyboard)_sumAnimations[2].Target;
+                sb.Completed += ((s, e) => MoveTo(vActPos.X + distanceX / 3, vActPos.Y + distanceY / 3, time));
                 Go();
                 _sumAnimations = null;
+                this.vActPos = vTargetPos;
+
+                //vTargetPos = new Point(vActPos.X + distanceX / 3, vActPos.Y + distanceY / 3);
+                //_sumAnimations = new Animation[3];
+                //SetMoveAnimation();
+                //SetSizeChangeAnimation(1.15);
+                //Go();
+                //_sumAnimations = null;
+                //this.vActPos = vTargetPos;
             }
             else
             {
                 var rTargetPos = Get_rCourtPos(vTargetPos);
                 this.SetValue(Canvas.LeftProperty, rTargetPos.X);
                 this.SetValue(Canvas.TopProperty, rTargetPos.Y);
-            }  
-            this.vActPos = vTargetPos;
+                this.vActPos = vTargetPos;
+            }
         }
 
-        public void GotBated(int vTargetPosX, int vTargetPosY, int strength)
+        public void GotBated(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
         {
             vTargetPos = new Point(vTargetPosX, vTargetPosY);
-            double time = this.CalcAnimationTime(vTargetPosX, vTargetPosY, strength);
-            MoveTo(vTargetPosX, vTargetPosY, 0.4);
+            double time = this.CalcAnimationTime(vTargetPosX, vTargetPosY, batedSpeed_ms);
+            MoveTo(vTargetPosX, vTargetPosY, time);
         }
 
-        public double CalcAnimationTime(int vTargetPosX, int vTargetPosY, int strength)
+        public double CalcAnimationTime(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
         {
-
-            return strength;
+            double distanceX = Math.Abs(vTargetPosX - vActPos.X);
+            double distanceY = Math.Abs(vTargetPosY - vActPos.Y);
+            double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+            double distanceMeter = distancePixel * 10.9728 / 360;
+            double time = distanceMeter / batedSpeed_ms;
+            return time;
         }
 
         public double GetKmH(double time, int distance)
@@ -71,18 +87,17 @@ namespace MexicanTennisSimulator.Classes
 
         public void SetSizeChangeAnimation(double changeFactor, bool autoreverseOverTime = true)
         {
-            double time = 5;
             double totalTime;
             var actAnimation = new Storyboard();
 
             if (autoreverseOverTime)
-                totalTime = time / 2;
+                totalTime = _speed / 2;
             else
-                totalTime = time;
+                totalTime = _speed;
 
             var sizeChangeAnimation = new DoubleAnimation(
                 this.StrokeThickness, this.StrokeThickness * changeFactor, new Duration(
-                    TimeSpan.FromSeconds(time)));
+                    TimeSpan.FromSeconds(totalTime)));
             sizeChangeAnimation.AutoReverse = autoreverseOverTime;
             actAnimation.Children.Add(sizeChangeAnimation);
             Storyboard.SetTarget(sizeChangeAnimation, this);
