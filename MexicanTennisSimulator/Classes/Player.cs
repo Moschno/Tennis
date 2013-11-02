@@ -17,6 +17,7 @@ namespace MexicanTennisSimulator.Classes
         private bool _gameRunning;
         private bool _service;
         private bool _upperSide;
+        private bool _otherPlayerBatBall;
         private int _maxBatStrength = 1;
         private double _minGlobalStdBatSpeed_KmH = 70;
         private double _maxGlobalStdBatSpeed_KmH = 130;
@@ -30,6 +31,19 @@ namespace MexicanTennisSimulator.Classes
                     _maxBatStrength = value;  
                 else
                     throw new InvalidOperationException("Der Wert kann während der Simulation nicht geändert werden.");
+            }
+        }
+
+        public bool OtherPlayerBatBall
+        {
+            get { return _otherPlayerBatBall; }
+            set 
+            { 
+                _otherPlayerBatBall = value;
+                if (_otherPlayerBatBall)
+                {
+                    CalcBallBatPoint();
+                }
             }
         }
 
@@ -77,10 +91,10 @@ namespace MexicanTennisSimulator.Classes
             vTargetPos = new Point(targetPosX, targetPosY);
             if (speed > 0)
             {
-                _sumAnimations = new Animation[2];
+                _sumAnimationsStart = new AnimationStart[2];
+                _sumAnimationsStop = new AnimationPause[2];
                 SetMoveAnimation();
-                Go();
-                _sumAnimations = null;
+                StartAnimation();
             }
             else
             {
@@ -108,7 +122,7 @@ namespace MexicanTennisSimulator.Classes
                 if (rallyProps.Service == Players.One)
                 {
                     _service = true;
-                    this._ball.MoveTo(this.vActPos.X, this.vActPos.Y, 0);
+                    this._ball.MoveTo(this.vActPos.X + 100, this.vActPos.Y, 0);
                 }
             }
             else if (_playerTwo)
@@ -161,6 +175,21 @@ namespace MexicanTennisSimulator.Classes
         {
             double batSpeed_ms = CalcBatSpeed_ms(strength);
             _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms);
+            _otherPlayer._otherPlayerBatBall = true;
+        }
+
+
+
+        private Point CalcBallBatPoint()
+        {
+            double distanceTillFirstLandingX = _ball.vFirstTarget.X - _ball.vStartingPosLastBat.X;
+            double distanceTillFirstLandingY = _ball.vFirstTarget.Y - _ball.vStartingPosLastBat.Y;
+
+            var ballBatPoint = new Point();
+            ballBatPoint.X = distanceTillFirstLandingX + distanceTillFirstLandingX / 6;
+            ballBatPoint.Y = distanceTillFirstLandingY + distanceTillFirstLandingY / 6;
+
+            return ballBatPoint;
         }
 
         private double CalcBatSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.

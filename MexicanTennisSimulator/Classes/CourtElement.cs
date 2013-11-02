@@ -48,7 +48,8 @@ namespace MexicanTennisSimulator.Classes
         protected bool _gameBall;
         protected Canvas _rCourt;
         protected Canvas _vCourt;
-        protected Animation[] _sumAnimations;
+        protected AnimationStart[] _sumAnimationsStart;
+        protected AnimationPause[] _sumAnimationsStop;
         protected double _speed = 5;
 
         public Point vActPos
@@ -84,7 +85,8 @@ namespace MexicanTennisSimulator.Classes
             get { return _gameBall; }
         }
 
-        protected delegate void Animation();
+        protected delegate void AnimationStart(FrameworkElement element, bool controllable);
+        protected delegate void AnimationPause(FrameworkElement element);
         protected abstract void SetColor(Color color);
         public abstract void MoveTo(double targetPosX, double targetPosY, double time);
 
@@ -108,14 +110,20 @@ namespace MexicanTennisSimulator.Classes
 
         protected void RefreshValues()
         {
-            _sumAnimations = null;
+            _sumAnimationsStart = null;
             this.vActPos = vTargetPos;
         }
 
-        protected void Go()
+        protected void StartAnimation()
         {
-            Animation executeAnimation = (Animation)Delegate.Combine(_sumAnimations);
-            executeAnimation();
+            AnimationStart startAnimation = (AnimationStart)Delegate.Combine(_sumAnimationsStart);
+            startAnimation(_rCourt, true);
+        }
+
+        public void PauseAnimation()
+        {
+            AnimationPause pauseAnimation = (AnimationPause)Delegate.Combine(_sumAnimationsStop);
+            pauseAnimation(_rCourt);
         }
 
         protected void SetMoveAnimation()
@@ -129,13 +137,15 @@ namespace MexicanTennisSimulator.Classes
             actAnimation.Children.Add(moveRightAnimation);
             Storyboard.SetTarget(moveRightAnimation, this);
             Storyboard.SetTargetProperty(moveRightAnimation, new PropertyPath(Canvas.LeftProperty));
-            _sumAnimations[0] = new Animation(actAnimation.Begin);
+            _sumAnimationsStart[0] = new AnimationStart(actAnimation.Begin);
+            _sumAnimationsStop[0] = new AnimationPause(actAnimation.Pause);
 
             var moveDownAnimation = new DoubleAnimation(rActPos.Y, rTargetPos.Y, duration);
             actAnimation.Children.Add(moveDownAnimation);
             Storyboard.SetTarget(moveDownAnimation, this);
             Storyboard.SetTargetProperty(moveDownAnimation, new PropertyPath(Canvas.TopProperty));
-            _sumAnimations[1] = new Animation(actAnimation.Begin);
+            _sumAnimationsStart[1] = new AnimationStart(actAnimation.Begin);
+            _sumAnimationsStop[1] = new AnimationPause(actAnimation.Pause);
         }
 
         protected Point Get_rCourtPos(Point vTargetPos)
