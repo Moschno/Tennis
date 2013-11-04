@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using MexicanTennisSimulator;
+using System.Windows.Media.Animation;
 
 namespace MexicanTennisSimulator.Classes
 {
@@ -17,10 +18,10 @@ namespace MexicanTennisSimulator.Classes
         private bool _gameRunning;
         private bool _service;
         private bool _upperSide;
-        private bool _otherPlayerBatBall;
         private int _maxBatStrength = 1;
         private double _minGlobalStdBatSpeed_KmH = 70;
         private double _maxGlobalStdBatSpeed_KmH = 130;
+        private double _maxPlayerSpeed_KmH = 20;
 
         public int PlayerStrength
         {
@@ -31,19 +32,6 @@ namespace MexicanTennisSimulator.Classes
                     _maxBatStrength = value;  
                 else
                     throw new InvalidOperationException("Der Wert kann während der Simulation nicht geändert werden.");
-            }
-        }
-
-        public bool OtherPlayerBatBall
-        {
-            get { return _otherPlayerBatBall; }
-            set 
-            { 
-                _otherPlayerBatBall = value;
-                if (_otherPlayerBatBall)
-                {
-                    CalcBallBatPoint();
-                }
             }
         }
 
@@ -86,23 +74,29 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = fourColorRGB;
         }
 
-        public override void MoveTo(double targetPosX, double targetPosY, double speed)
+        public void MoveToTarget(double speed_ms, bool TryToGetBall = false)
         {
-            vTargetPos = new Point(targetPosX, targetPosY);
-            if (speed > 0)
+            _posChanged = false;
+            if (speed_ms > 0)
             {
+                _calcedAnimationTime = CalcAnimationTime(speed_ms);
                 _sumAnimationsStart = new AnimationStart[2];
                 _sumAnimationsStop = new AnimationPause[2];
                 SetMoveAnimation();
+                var sb = (Storyboard)_sumAnimationsStart[1].Target;
+                sb.Completed += ((s, e) => this.vActPos = vTargetPos);
+                if (true)
+                {
+                    sb.Completed += ((s, e) => _ball.BatPoint = vActPos);
+                    sb.Completed += ((s, e) => this._posChanged = true);
+                }
                 StartAnimation();
             }
             else
             {
-                var rTargetPos = Get_rCourtPos(vTargetPos);
-                this.SetValue(Canvas.LeftProperty, rTargetPos.X);
-                this.SetValue(Canvas.TopProperty, rTargetPos.Y);
+                this.vActPos = vTargetPos;
+                _posChanged = true;
             }
-            this.vActPos = vTargetPos;
         }
 
         public void Prepare4Rally(Rally rallyProps)
@@ -114,15 +108,18 @@ namespace MexicanTennisSimulator.Classes
                 if (rallyProps.UpperSide == Players.One)
                 {
                     _upperSide = true;
-                    this.MoveTo(-100, 400, 0);
+                    vTargetPos = new Point(-100, 400);
+                    this.MoveToTarget(0);
                 }
                 else
-                    this.MoveTo(100, -400, 0);
+                    vTargetPos = new Point(100, -400);
+                    this.MoveToTarget(0);
 
                 if (rallyProps.Service == Players.One)
                 {
                     _service = true;
-                    this._ball.MoveTo(this.vActPos.X + 100, this.vActPos.Y, 0);
+                    this._ball.vTargetPos = vActPos;
+                    this._ball.MoveTo(0);
                 }
             }
             else if (_playerTwo)
@@ -132,15 +129,20 @@ namespace MexicanTennisSimulator.Classes
                 if (rallyProps.UpperSide == Players.Two)
                 {
                     _upperSide = true;
-                    this.MoveTo(-100, 400, 0);
+                    vTargetPos = new Point(-100, 400);
+                    this.MoveToTarget(0);
                 }
                 else
-                    this.MoveTo(100, -400, 0);
+                {
+                    vTargetPos = new Point(100, -400);
+                    this.MoveToTarget(0);
+                }
 
                 if (rallyProps.Service == Players.Two)
                 {
                     _service = true;
-                    this._ball.MoveTo(this.vActPos.X, this.vActPos.Y, 0);
+                    this._ball.vTargetPos = vActPos;
+                    this._ball.MoveTo(0);
                 }
             }
             else
@@ -171,28 +173,40 @@ namespace MexicanTennisSimulator.Classes
             }
         }
 
-        private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
+        public void OtherPlayerBatBall()
         {
-            double batSpeed_ms = CalcBatSpeed_ms(strength);
-            _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms);
-            _otherPlayer._otherPlayerBatBall = true;
+            TryToGetBall();
         }
 
+        private void TryToGetBall()
+        {
+            vTargetPos = CalcBallBatPoint();
+            MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
+        }
 
+        private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
+        {
+            double batSpeed_ms = ConvertStrengthToSpeed_ms(strength);
+            _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms);
+            _otherPlayer.OtherPlayerBatBall();
+        }
 
         private Point CalcBallBatPoint()
         {
-            double distanceTillFirstLandingX = _ball.vFirstTarget.X - _ball.vStartingPosLastBat.X;
-            double distanceTillFirstLandingY = _ball.vFirstTarget.Y - _ball.vStartingPosLastBat.Y;
+            double distanceTillFirstLandingX = _ball.vFirstTarget.X - _ball.vGotBatedPos.X;
+            double distanceTillFirstLandingY = _ball.vFirstTarget.Y - _ball.vGotBatedPos.Y;
+
+            double distanceFromFirstBatPosX = distanceTillFirstLandingX + distanceTillFirstLandingX / vCourt.BallSlowDownFactor / 2;
+            double distanceFromFirstBatPosY = distanceTillFirstLandingY + distanceTillFirstLandingY / vCourt.BallSlowDownFactor / 2;
 
             var ballBatPoint = new Point();
-            ballBatPoint.X = distanceTillFirstLandingX + distanceTillFirstLandingX / 6;
-            ballBatPoint.Y = distanceTillFirstLandingY + distanceTillFirstLandingY / 6;
+            ballBatPoint.X = _ball.vGotBatedPos.X + distanceFromFirstBatPosX;
+            ballBatPoint.Y = _ball.vGotBatedPos.Y + distanceFromFirstBatPosY;
 
             return ballBatPoint;
         }
 
-        private double CalcBatSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.
+        private double ConvertStrengthToSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.
         {
             double interval = (_maxGlobalStdBatSpeed_KmH - _minGlobalStdBatSpeed_KmH) / 10;
             double batSpeed = _minGlobalStdBatSpeed_KmH / 3.6 + strength * interval;

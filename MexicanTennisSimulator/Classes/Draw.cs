@@ -126,7 +126,10 @@ namespace MexicanTennisSimulator.Classes
             _courtObjects[index].SetValue(Canvas.TopProperty, _rCourt.ActualHeight / 2 + strokeThicknessNet / 2 - _courtObjects[index].Height / 2);
 
             foreach (var item in _courtObjects)
+            {
                 _rCourt.Children.Add(item);
+                item.SetValue(Canvas.ZIndexProperty, 1);
+            }
         }
     }
 }

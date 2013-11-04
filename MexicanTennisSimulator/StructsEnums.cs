@@ -8,4 +8,5 @@ namespace MexicanTennisSimulator
 {
     public struct Rally { public Players Service; public Players UpperSide; };
     public enum Players { One, Two };
+    public enum Iteration { First, Recursion, Last }
 }

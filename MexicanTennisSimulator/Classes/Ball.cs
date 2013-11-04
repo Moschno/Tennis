@@ -15,17 +15,32 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Ball : CourtElement
     {
-        private Point _vStartingPosLastBat;
-        private Point _vFirstTarget;
+        private Point _vGotBatedPos;
+        private Point _vFirstTargetPos;
+        private Point _batPoint;
+        private bool _willBeBated;
 
-        public Point vStartingPosLastBat
+        public Point vGotBatedPos
         {
-            get { return _vStartingPosLastBat; }
+            get { return _vGotBatedPos; }
         }
 
         public Point vFirstTarget
         {
-            get { return _vFirstTarget; }
+            get { return _vFirstTargetPos; }
+        }
+
+        public Point BatPoint
+        {
+            get { return _batPoint; }
+            set 
+            { 
+                _batPoint = value;
+                if (_batPoint != null)
+                {
+                    _willBeBated = true; 
+                }
+            }
         }
 
         public Ball(ref Canvas rCourt, Color color)
@@ -40,48 +55,76 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = new SolidColorBrush(color);
         }
 
-        public override void MoveTo(double vTargetPosX, double vTargetPosY, double time)
+        public void MoveTo(double speed_ms, Iteration it = Iteration.First)
         {
-            vTargetPos = new Point(vTargetPosX, vTargetPosY);
-            double distanceX = vTargetPosX - vActPos.X;
-            double distanceY = vTargetPosY - vActPos.Y;
-            _speed = time;
-            if (_speed > 0)
+            _posChanged = false;
+            double distanceX = vTargetPos.X - vActPos.X;
+            double distanceY = vTargetPos.Y - vActPos.Y;
+            if (speed_ms > 0)
             {
+                if (it == Iteration.First)
+                {
+                    _vFirstTargetPos = vTargetPos;
+                    _vGotBatedPos = vActPos;
+                }
+                _calcedAnimationTime = CalcAnimationTime(speed_ms);
                 _sumAnimationsStart = new AnimationStart[3];
                 _sumAnimationsStop = new AnimationPause[3];
                 SetMoveAnimation();
                 SetSizeChangeAnimation(1.0);
                 var sb = (Storyboard)_sumAnimationsStart[2].Target;
-                sb.Completed += ((s, e) => MoveTo(vActPos.X + distanceX / 3, vActPos.Y + distanceY / 3, time));
+                sb.Completed += ((s, e) => this.vActPos = vTargetPos);
+                if (speed_ms > 0.1)
+                {
+                    if (_willBeBated)
+                    {
+                        int checkValue = CompareDistances(vActPos, vTargetPos, _batPoint);
+                        if (checkValue == 1)
+                        {
+                            
+                        }
+                    }
+                    else
+                    {
+                        sb.Completed += ((s, e) => distanceX = vActPos.X + distanceX / vCourt.BallSlowDownFactor);
+                        sb.Completed += ((s, e) => distanceY = vActPos.Y + distanceY / vCourt.BallSlowDownFactor);
+                        sb.Completed += ((s, e) => speed_ms /= vCourt.BallSlowDownFactor);
+                        sb.Completed += ((s, e) => vTargetPos = new Point(distanceX, distanceY));
+                        sb.Completed += ((s, e) => MoveTo(speed_ms, Iteration.Recursion)); 
+                    }
+                }
                 StartAnimation();
             }
             else
             {
-                var rTargetPos = Get_rCourtPos(vTargetPos);
-                this.SetValue(Canvas.LeftProperty, rTargetPos.X);
-                this.SetValue(Canvas.TopProperty, rTargetPos.Y);
+                this.vActPos = vTargetPos;
             }
-            this.vActPos = vTargetPos;
+        }
+
+        private int CompareDistances(Point startPos, Point targetPos1, Point targetPos2)
+        {
+            double distance1X = Math.Abs(startPos.X - targetPos1.X);
+            double distance1Y = Math.Abs(startPos.Y - targetPos1.Y);
+            double distance2X = Math.Abs(startPos.X - targetPos2.X);
+            double distance2Y = Math.Abs(startPos.Y - targetPos2.Y);
+
+            double distance1 = Math.Sqrt(distance1X * distance1X + distance1Y * distance1Y);
+            double distance2 = Math.Sqrt(distance2X * distance2X + distance2Y * distance2Y);
+
+            if (distance1 > distance2)
+                return 1;
+            else if (distance2 > distance1)
+                return 2;
+            else
+                return -1;
         }
 
         public void GotBated(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
         {
             vTargetPos = new Point(vTargetPosX, vTargetPosY);
-            _vStartingPosLastBat = vActPos;
-            _vFirstTarget = vTargetPos;
-            double time = this.CalcAnimationTime(vTargetPosX, vTargetPosY, batedSpeed_ms);
-            MoveTo(vTargetPosX, vTargetPosY, time);
-        }
-
-        public double CalcAnimationTime(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
-        {
-            double distanceX = Math.Abs(vTargetPosX - vActPos.X);
-            double distanceY = Math.Abs(vTargetPosY - vActPos.Y);
-            double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
-            double distanceMeter = distancePixel * 10.9728 / 360;
-            double time = distanceMeter / batedSpeed_ms;
-            return time;
+            _vGotBatedPos = vActPos;
+            _vFirstTargetPos = vTargetPos;
+            MoveTo(batedSpeed_ms);
         }
 
         public double GetKmH(double time, int distance)
@@ -93,13 +136,13 @@ namespace MexicanTennisSimulator.Classes
         {
             changeFactor = 1;
             double totalTime;
-            var actAnimation = new Storyboard();
 
             if (autoreverseOverTime)
-                totalTime = _speed / 2;
+                totalTime = _calcedAnimationTime / 2;
             else
-                totalTime = _speed;
+                totalTime = _calcedAnimationTime;
 
+            var actAnimation = new Storyboard();
             var sizeChangeAnimation = new DoubleAnimation(
                 this.StrokeThickness, this.StrokeThickness * changeFactor, new Duration(
                     TimeSpan.FromSeconds(totalTime)));

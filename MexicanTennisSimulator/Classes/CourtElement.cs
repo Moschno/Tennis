@@ -24,7 +24,7 @@ namespace MexicanTennisSimulator.Classes
         }
 
         public static readonly DependencyProperty vActPosProperty =
-            DependencyProperty.Register("vActPos", typeof(Point), typeof(CourtElement));
+            DependencyProperty.Register("vActPos", typeof(Point), typeof(CourtElement), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnPositionChanged)));
         public static readonly DependencyProperty vTargetPosProperty =
             DependencyProperty.Register("vTargetPos", typeof(Point), typeof(CourtElement));
         public static readonly DependencyProperty ElementColorProperty =
@@ -32,25 +32,28 @@ namespace MexicanTennisSimulator.Classes
 
         protected static void OnColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var myCourtElement = (CourtElement)d;
-            myCourtElement.SetColor((Color)e.NewValue);
+            var dies = (CourtElement)d;
+            dies.SetColor((Color)e.NewValue);
         }
 
         protected static void OnPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var myCourtElement = (CourtElement)d;
-            var target = (Point)e.NewValue;            
-            //myCourtElement.MoveTo
+            var dies = (CourtElement)d;
+            var vPos = (Point)e.NewValue;
+            var rPos = dies.Get_rCourtPos(vPos);
+            dies.SetLeft(rPos.X);
+            dies.SetTop(rPos.Y);
+            dies._posChanged = true;
         }
 
         protected bool _playerOne;
         protected bool _playerTwo;
         protected bool _gameBall;
         protected Canvas _rCourt;
-        protected Canvas _vCourt;
         protected AnimationStart[] _sumAnimationsStart;
         protected AnimationPause[] _sumAnimationsStop;
-        protected double _speed = 5;
+        protected double _calcedAnimationTime;
+        protected bool _posChanged;
 
         public Point vActPos
         {
@@ -88,7 +91,6 @@ namespace MexicanTennisSimulator.Classes
         protected delegate void AnimationStart(FrameworkElement element, bool controllable);
         protected delegate void AnimationPause(FrameworkElement element);
         protected abstract void SetColor(Color color);
-        public abstract void MoveTo(double targetPosX, double targetPosY, double time);
 
         protected CourtElement(ref Canvas rCourt, Color color)
         {
@@ -102,10 +104,6 @@ namespace MexicanTennisSimulator.Classes
                 _playerOne = true;
             else if (ownCourtIndex == 12)
                 _playerTwo = true;
-
-            _vCourt = new Canvas();
-            _vCourt.Width = 720;
-            _vCourt.Height = 1560;
         }
 
         protected void RefreshValues()
@@ -128,7 +126,7 @@ namespace MexicanTennisSimulator.Classes
 
         protected void SetMoveAnimation()
         {
-            var duration = new Duration(TimeSpan.FromSeconds(_speed));
+            var duration = new Duration(TimeSpan.FromSeconds(_calcedAnimationTime));
             var rActPos = Get_rCourtPos(vActPos);
             var rTargetPos = Get_rCourtPos(vTargetPos);
             var actAnimation = new Storyboard();
@@ -151,10 +149,20 @@ namespace MexicanTennisSimulator.Classes
         protected Point Get_rCourtPos(Point vTargetPos)
         {
             var rPos = new Point();
-            rPos.X = vTargetPos.X * _rCourt.ActualWidth / _vCourt.Width + _rCourt.ActualWidth / 2;
-            rPos.Y = (-1) * vTargetPos.Y * _rCourt.ActualHeight / _vCourt.Height + _rCourt.ActualHeight / 2;
+            rPos.X = vTargetPos.X * _rCourt.ActualWidth / vCourt.Width + _rCourt.ActualWidth / 2;
+            rPos.Y = (-1) * vTargetPos.Y * _rCourt.ActualHeight / vCourt.Height + _rCourt.ActualHeight / 2;
 
             return rPos;
+        }
+
+        protected double CalcAnimationTime(double batedSpeed_ms)
+        {
+            double distanceX = Math.Abs(vTargetPos.X - vActPos.X);
+            double distanceY = Math.Abs(vTargetPos.Y - vActPos.Y);
+            double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+            double distanceMeter = distancePixel * 10.9728 / 360;
+            double time = distanceMeter / batedSpeed_ms;
+            return time;
         }
     }
 }
