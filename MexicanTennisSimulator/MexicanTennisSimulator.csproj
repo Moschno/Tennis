@@ -62,6 +62,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\Cross.cs" />
     <Compile Include="Classes\vCourt.cs" />
     <Compile Include="StructsEnums.cs" />
   </ItemGroup>

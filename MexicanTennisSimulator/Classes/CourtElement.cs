@@ -38,12 +38,12 @@ namespace MexicanTennisSimulator.Classes
 
         protected static void OnPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var dies = (CourtElement)d;
-            var vPos = (Point)e.NewValue;
-            var rPos = dies.Get_rCourtPos(vPos);
-            dies.SetLeft(rPos.X);
-            dies.SetTop(rPos.Y);
-            dies._posChanged = true;
+            //var dies = (CourtElement)d;
+            //var vPos = (Point)e.NewValue;
+            //var rPos = dies.Get_rCourtPos(vPos);
+            //dies.SetLeft(rPos.X);
+            //dies.SetTop(rPos.Y);
+            //dies._posChanged = true;
         }
 
         protected bool _playerOne;

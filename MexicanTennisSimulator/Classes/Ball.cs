@@ -15,6 +15,8 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Ball : CourtElement
     {
+        private static int BallSize = 10;
+        private Player _ballBater;
         private Point _vGotBatedPos;
         private Point _vFirstTargetPos;
         private Point _batPoint;
@@ -46,8 +48,8 @@ namespace MexicanTennisSimulator.Classes
         public Ball(ref Canvas rCourt, Color color)
             : base(ref rCourt, color)
         {
-            this.StrokeThickness = 10;
-            this.SetZIndex(2);
+            this.StrokeThickness = BallSize;
+            this.SetZIndex(3);
         }
 
         protected override void SetColor(Color color)
@@ -55,11 +57,27 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = new SolidColorBrush(color);
         }
 
-        public void MoveTo(double speed_ms, Iteration it = Iteration.First)
+        public void MoveToTarget(double speed_ms, Iteration it = Iteration.First)
         {
-            _posChanged = false;
+            if (_willBeBated)
+            {
+                _willBeBated = false;
+                int checkValue = CompareDistances(vActPos, vTargetPos, _batPoint);
+                if (checkValue == 1)
+                    it = Iteration.Last;
+            }
+
             double distanceX = vTargetPos.X - vActPos.X;
             double distanceY = vTargetPos.Y - vActPos.Y;
+            
+            if (it == Iteration.Last)
+            {
+                var vNewTargetPos = new Point();
+                vNewTargetPos.X = vTargetPos.X - distanceX / 2;
+                vNewTargetPos.Y = vTargetPos.Y - distanceY / 2;
+                vTargetPos = vNewTargetPos;
+            }
+
             if (speed_ms > 0)
             {
                 if (it == Iteration.First)
@@ -71,18 +89,20 @@ namespace MexicanTennisSimulator.Classes
                 _sumAnimationsStart = new AnimationStart[3];
                 _sumAnimationsStop = new AnimationPause[3];
                 SetMoveAnimation();
-                SetSizeChangeAnimation(1.0);
+                SetSizeChangeAnimation(1);
                 var sb = (Storyboard)_sumAnimationsStart[2].Target;
                 sb.Completed += ((s, e) => this.vActPos = vTargetPos);
                 if (speed_ms > 0.1)
                 {
-                    if (_willBeBated)
+                    if (it == Iteration.First)
                     {
-                        int checkValue = CompareDistances(vActPos, vTargetPos, _batPoint);
-                        if (checkValue == 1)
-                        {
-                            
-                        }
+                        int rCourtChildIndex = DrawBallTarget();
+                        sb.Completed += ((s, e) => _rCourt.Children.RemoveAt(rCourtChildIndex));
+                    }
+
+                    if (it == Iteration.Last)
+                    {
+                        sb.Completed += ((s, e) => _ballBater._otherPlayer.ReturnBall());
                     }
                     else
                     {
@@ -90,7 +110,7 @@ namespace MexicanTennisSimulator.Classes
                         sb.Completed += ((s, e) => distanceY = vActPos.Y + distanceY / vCourt.BallSlowDownFactor);
                         sb.Completed += ((s, e) => speed_ms /= vCourt.BallSlowDownFactor);
                         sb.Completed += ((s, e) => vTargetPos = new Point(distanceX, distanceY));
-                        sb.Completed += ((s, e) => MoveTo(speed_ms, Iteration.Recursion)); 
+                        sb.Completed += ((s, e) => MoveToTarget(speed_ms, Iteration.Recursion));
                     }
                 }
                 StartAnimation();
@@ -98,6 +118,9 @@ namespace MexicanTennisSimulator.Classes
             else
             {
                 this.vActPos = vTargetPos;
+                var rActPos = Get_rCourtPos(vActPos);
+                this.SetValue(Canvas.LeftProperty, rActPos.X);
+                this.SetValue(Canvas.TopProperty, rActPos.Y);
             }
         }
 
@@ -119,17 +142,28 @@ namespace MexicanTennisSimulator.Classes
                 return -1;
         }
 
-        public void GotBated(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
+        public void GotBated(double vTargetPosX, double vTargetPosY, double batedSpeed_ms, Player player)
         {
+            _ballBater = player;
             vTargetPos = new Point(vTargetPosX, vTargetPosY);
             _vGotBatedPos = vActPos;
             _vFirstTargetPos = vTargetPos;
-            MoveTo(batedSpeed_ms);
+            MoveToTarget(batedSpeed_ms);
         }
 
-        public double GetKmH(double time, int distance)
+        private int DrawBallTarget()
         {
-            return -1;
+            var rTargetPos = Get_rCourtPos(vTargetPos);
+            var cross = new Cross();
+            cross.Size = BallSize / 4;
+            cross.Stroke = Brushes.Black;
+            cross.SetZIndex(2);
+            cross.SetLeft(rTargetPos.X);
+            cross.SetTop(rTargetPos.Y);
+
+            int index = _rCourt.Children.Add(cross);
+
+            return index;
         }
 
         public void SetSizeChangeAnimation(double changeFactor, bool autoreverseOverTime = true) //todo: Nur noch als Pseudo vorhanden

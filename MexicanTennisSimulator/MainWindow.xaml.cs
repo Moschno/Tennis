@@ -53,7 +53,10 @@ namespace MexicanTennisSimulator
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            _ball.PauseAnimation();
+        }
+
+        private void winMain_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
         }
     }
 }

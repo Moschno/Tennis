@@ -13,7 +13,7 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Player : CourtElement
     {
-        private Player _otherPlayer;
+        public Player _otherPlayer;
         private Ball _ball;
         private bool _gameRunning;
         private bool _service;
@@ -22,6 +22,7 @@ namespace MexicanTennisSimulator.Classes
         private double _minGlobalStdBatSpeed_KmH = 70;
         private double _maxGlobalStdBatSpeed_KmH = 130;
         private double _maxPlayerSpeed_KmH = 20;
+        private int test = 5;
 
         public int PlayerStrength
         {
@@ -39,7 +40,7 @@ namespace MexicanTennisSimulator.Classes
             : base(ref rCourt, color)
         {
             this.StrokeThickness = 40;
-            this.SetValue(Panel.ZIndexProperty, 3);
+            this.SetValue(Panel.ZIndexProperty, 4);
         }
 
         protected override void SetColor(Color color)
@@ -74,9 +75,8 @@ namespace MexicanTennisSimulator.Classes
             this.Stroke = fourColorRGB;
         }
 
-        public void MoveToTarget(double speed_ms, bool TryToGetBall = false)
+        public void MoveToTarget(double speed_ms)
         {
-            _posChanged = false;
             if (speed_ms > 0)
             {
                 _calcedAnimationTime = CalcAnimationTime(speed_ms);
@@ -88,14 +88,15 @@ namespace MexicanTennisSimulator.Classes
                 if (true)
                 {
                     sb.Completed += ((s, e) => _ball.BatPoint = vActPos);
-                    sb.Completed += ((s, e) => this._posChanged = true);
                 }
                 StartAnimation();
             }
             else
             {
                 this.vActPos = vTargetPos;
-                _posChanged = true;
+                var rActPos = Get_rCourtPos(vActPos);
+                this.SetValue(Canvas.LeftProperty, rActPos.X);
+                this.SetValue(Canvas.TopProperty, rActPos.Y);
             }
         }
 
@@ -119,7 +120,7 @@ namespace MexicanTennisSimulator.Classes
                 {
                     _service = true;
                     this._ball.vTargetPos = vActPos;
-                    this._ball.MoveTo(0);
+                    this._ball.MoveToTarget(0);
                 }
             }
             else if (_playerTwo)
@@ -142,7 +143,7 @@ namespace MexicanTennisSimulator.Classes
                 {
                     _service = true;
                     this._ball.vTargetPos = vActPos;
-                    this._ball.MoveTo(0);
+                    this._ball.MoveToTarget(0);
                 }
             }
             else
@@ -171,23 +172,42 @@ namespace MexicanTennisSimulator.Classes
             {
                 BatBall(-100, 210, _maxBatStrength);
             }
+
+        }
+
+        public void ReturnBall()
+        {
+            if (_upperSide)
+            {
+                BatBall(100 + test, -310, _maxBatStrength);
+                test += 5;
+                vTargetPos = new Point(0, 400);
+                MoveToTarget(_maxPlayerSpeed_KmH);
+            }
+            else
+            {
+                BatBall(-115 - test, 330, _maxBatStrength);
+                test -= 5;
+                vTargetPos = new Point(0, -400);
+                MoveToTarget(_maxPlayerSpeed_KmH);
+            }
         }
 
         public void OtherPlayerBatBall()
         {
-            TryToGetBall();
+            TryToReachBallBatPoint();
         }
 
-        private void TryToGetBall()
+        private void TryToReachBallBatPoint()
         {
             vTargetPos = CalcBallBatPoint();
-            MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
+            MoveToTarget(_maxPlayerSpeed_KmH);
         }
 
         private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
         {
             double batSpeed_ms = ConvertStrengthToSpeed_ms(strength);
-            _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms);
+            _ball.GotBated(vTargetPosX, vTargetPosY, batSpeed_ms, this);
             _otherPlayer.OtherPlayerBatBall();
         }
 
