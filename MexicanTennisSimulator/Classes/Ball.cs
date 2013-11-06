@@ -111,6 +111,7 @@ namespace MexicanTennisSimulator.Classes
                         sb.Completed += ((s, e) => speed_ms /= vCourt.BallSlowDownFactor);
                         sb.Completed += ((s, e) => vTargetPos = new Point(distanceX, distanceY));
                         sb.Completed += ((s, e) => MoveToTarget(speed_ms, Iteration.Recursion));
+                        sb.Completed += ((s, e) => MessageBox.Show("Complete"));
                     }
                 }
                 StartAnimation();

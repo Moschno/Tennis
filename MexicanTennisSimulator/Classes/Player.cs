@@ -182,14 +182,14 @@ namespace MexicanTennisSimulator.Classes
                 BatBall(100 + test, -310, _maxBatStrength);
                 test += 5;
                 vTargetPos = new Point(0, 400);
-                MoveToTarget(_maxPlayerSpeed_KmH);
+                MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
             }
             else
             {
                 BatBall(-115 - test, 330, _maxBatStrength);
                 test -= 5;
                 vTargetPos = new Point(0, -400);
-                MoveToTarget(_maxPlayerSpeed_KmH);
+                MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
             }
         }
 
@@ -201,7 +201,7 @@ namespace MexicanTennisSimulator.Classes
         private void TryToReachBallBatPoint()
         {
             vTargetPos = CalcBallBatPoint();
-            MoveToTarget(_maxPlayerSpeed_KmH);
+            MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
         }
 
         private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
