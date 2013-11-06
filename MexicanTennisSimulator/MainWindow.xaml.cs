@@ -33,10 +33,6 @@ namespace MexicanTennisSimulator
         {
             Draw.DrawCourt(ref _rCourt);
 
-            _ball = new Ball(ref _rCourt, Colors.Yellow);
-            _playerOne = new Player(ref _rCourt, Colors.Blue);
-            _playerTwo = new Player(ref _rCourt, Colors.Red);
-
             Rally rallyProps;
             rallyProps.Service = Players.One;
             rallyProps.UpperSide = Players.One;

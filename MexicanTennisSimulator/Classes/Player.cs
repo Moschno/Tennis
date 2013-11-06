@@ -13,145 +13,63 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Player : CourtElement
     {
-        public Player _otherPlayer;
+        private Player _otherPlayer;
         private Ball _ball;
         private bool _gameRunning;
         private bool _service;
         private bool _upperSide;
-        private int _maxBatStrength = 1;
-        private double _minGlobalStdBatSpeed_KmH = 70;
-        private double _maxGlobalStdBatSpeed_KmH = 130;
-        private double _maxPlayerSpeed_KmH = 20;
-        private int test = 5;
+        public int MaxBatStrength = 1;
+        private double _minGlobalBatSpeed_KmH = 70;
+        private double _maxGlobalBatSpeed_KmH = 130;
+        public double MaxPlayerSpeed_KmH = 20;
 
-        public int PlayerStrength
+        public void MoveToTargetPos(double speed_ms)
         {
-            get { return _maxBatStrength; }
-            set 
-            {
-                if (!_gameRunning)
-                    _maxBatStrength = value;  
-                else
-                    throw new InvalidOperationException("Der Wert kann während der Simulation nicht geändert werden.");
-            }
-        }
-
-        public Player(ref Canvas rCourt, Color color)
-            : base(ref rCourt, color)
-        {
-            this.StrokeThickness = 40;
-            this.SetValue(Panel.ZIndexProperty, 4);
-        }
-
-        protected override void SetColor(Color color)
-        {
-            var radBrush = new RadialGradientBrush();
-            // Create a radial gradient brush with five stops 
-            RadialGradientBrush fourColorRGB = new RadialGradientBrush();
-            fourColorRGB.GradientOrigin = new Point(0.5, 0.5);
-            fourColorRGB.Center = new Point(0.5, 0.5);
-
-            // Create and add Gradient stops
-            GradientStop customGS = new GradientStop();
-            customGS.Color = color;
-            customGS.Offset = 0.2;
-            fourColorRGB.GradientStops.Add(customGS);
-
-            GradientStop yellowGS = new GradientStop();
-            yellowGS.Color = Colors.Yellow;
-            yellowGS.Offset = 0.3;
-            fourColorRGB.GradientStops.Add(yellowGS);
-
-            GradientStop yellow2GS = new GradientStop();
-            yellow2GS.Color = Colors.Yellow;
-            yellow2GS.Offset = 0.7;
-            fourColorRGB.GradientStops.Add(yellow2GS);
-
-            GradientStop blackGS = new GradientStop();
-            blackGS.Color = Colors.Black;
-            blackGS.Offset = 1.1;
-            fourColorRGB.GradientStops.Add(blackGS);
-
-            this.Stroke = fourColorRGB;
-        }
-
-        public void MoveToTarget(double speed_ms)
-        {
-            if (speed_ms > 0)
-            {
-                _calcedAnimationTime = CalcAnimationTime(speed_ms);
-                _sumAnimationsStart = new AnimationStart[2];
-                _sumAnimationsStop = new AnimationPause[2];
-                SetMoveAnimation();
-                var sb = (Storyboard)_sumAnimationsStart[1].Target;
-                sb.Completed += ((s, e) => this.vActPos = vTargetPos);
-                if (true)
-                {
-                    sb.Completed += ((s, e) => _ball.BatPoint = vActPos);
-                }
-                StartAnimation();
-            }
-            else
-            {
-                this.vActPos = vTargetPos;
-                var rActPos = Get_rCourtPos(vActPos);
-                this.SetValue(Canvas.LeftProperty, rActPos.X);
-                this.SetValue(Canvas.TopProperty, rActPos.Y);
-            }
+           
         }
 
         public void Prepare4Rally(Rally rallyProps)
         {
             if (_playerOne)
             {
-                _otherPlayer = (Player)_rCourt.Children[12];
-                _ball = (Ball)_rCourt.Children[10];
                 if (rallyProps.UpperSide == Players.One)
                 {
                     _upperSide = true;
                     vTargetPos = new Point(-100, 400);
-                    this.MoveToTarget(0);
+                    this.MoveToTargetPos(0);
                 }
                 else
                     vTargetPos = new Point(100, -400);
-                    this.MoveToTarget(0);
+                    this.MoveToTargetPos(0);
 
                 if (rallyProps.Service == Players.One)
                 {
                     _service = true;
                     this._ball.vTargetPos = vActPos;
-                    this._ball.MoveToTarget(0);
+                    this._ball.MoveToTargetPos(0);
                 }
             }
             else if (_playerTwo)
             {
-                _otherPlayer = (Player)_rCourt.Children[11];
-                _ball = (Ball)_rCourt.Children[10];
                 if (rallyProps.UpperSide == Players.Two)
                 {
                     _upperSide = true;
                     vTargetPos = new Point(-100, 400);
-                    this.MoveToTarget(0);
+                    this.MoveToTargetPos(0);
                 }
                 else
                 {
                     vTargetPos = new Point(100, -400);
-                    this.MoveToTarget(0);
+                    this.MoveToTargetPos(0);
                 }
 
                 if (rallyProps.Service == Players.Two)
                 {
                     _service = true;
                     this._ball.vTargetPos = vActPos;
-                    this._ball.MoveToTarget(0);
+                    this._ball.MoveToTargetPos(0);
                 }
             }
-            else
-                throw new Exception("Dies ist kein Spieler auf dem rCourt bzw. es wurden die Kinds-Objekte des rCourt falsch zugeordnet."
-                                    + "\n_rCourt.Children.Add[10] -> immer der Spielball"
-                                    + "\n_rCourt.Children.Add[11] -> immer Spieler 1"
-                                    + "\n_rCourt.Children.Add[12] -> immer Spieler 2"
-                                    + "\nJeder weitere hinzugefügte Ball/Spieler wirft diese Exception");
         }
 
         public void StartRally()
@@ -166,11 +84,11 @@ namespace MexicanTennisSimulator.Classes
         {
             if (_upperSide)
             {
-                BatBall(100, -210, _maxBatStrength);
+                BatBall(100, -210, MaxBatStrength);
             }
             else
             {
-                BatBall(-100, 210, _maxBatStrength);
+                BatBall(-100, 210, MaxBatStrength);
             }
 
         }
@@ -179,17 +97,15 @@ namespace MexicanTennisSimulator.Classes
         {
             if (_upperSide)
             {
-                BatBall(100 + test, -310, _maxBatStrength);
-                test += 5;
+                BatBall(100, -310, MaxBatStrength);
                 vTargetPos = new Point(0, 400);
-                MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
+                MoveToTargetPos(MaxPlayerSpeed_KmH / 3.6);
             }
             else
             {
-                BatBall(-115 - test, 330, _maxBatStrength);
-                test -= 5;
+                BatBall(-115, 330, MaxBatStrength);
                 vTargetPos = new Point(0, -400);
-                MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
+                MoveToTargetPos(MaxPlayerSpeed_KmH / 3.6);
             }
         }
 
@@ -201,7 +117,8 @@ namespace MexicanTennisSimulator.Classes
         private void TryToReachBallBatPoint()
         {
             vTargetPos = CalcBallBatPoint();
-            MoveToTarget(_maxPlayerSpeed_KmH / 3.6);
+            CalcTimeTillTarget(MaxPlayerSpeed_KmH / 3.6);
+            MoveToTargetPos(MaxPlayerSpeed_KmH / 3.6);
         }
 
         private void BatBall(double vTargetPosX, double vTargetPosY, int strength)
@@ -228,8 +145,8 @@ namespace MexicanTennisSimulator.Classes
 
         private double ConvertStrengthToSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.
         {
-            double interval = (_maxGlobalStdBatSpeed_KmH - _minGlobalStdBatSpeed_KmH) / 10;
-            double batSpeed = _minGlobalStdBatSpeed_KmH / 3.6 + strength * interval;
+            double interval = (_maxGlobalBatSpeed_KmH - _minGlobalBatSpeed_KmH) / 10;
+            double batSpeed = _minGlobalBatSpeed_KmH / 3.6 + strength * interval;
             return batSpeed;
         }
     }
