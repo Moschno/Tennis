@@ -15,11 +15,34 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Ball : CourtElement
     {
-        private static int BallSize = 10;
+        public static readonly int BallDiameter = 10;
+        private Point _firstLandingPos;
+        private Player _lastBatPlayer;
 
-        public void MoveToTargetPos(double speed_ms)
+        public override Point VActPos
         {
-            
+            get { return _vActPos; }
+            set { _vActPos = value; }
+        }
+
+        public Point FirstLandingPos
+        {
+            get { return _firstLandingPos; }
+        }
+
+        public Player LastBatPlayer
+        {
+            get { return _lastBatPlayer; }
+        }
+
+        public Ball()
+            : base()
+        {
+        }
+
+        public void GotBatted(Player ballBatter, double speed_ms)
+        {
+            MoveToTargetPos(speed_ms);
         }
 
         private int CompareDistances(Point startPos, Point targetPos1, Point targetPos2)
@@ -38,12 +61,6 @@ namespace MexicanTennisSimulator.Classes
                 return 2;
             else
                 return -1;
-        }
-
-        public void GotBated(double vTargetPosX, double vTargetPosY, double batedSpeed_ms)
-        {
-            vTargetPos = new Point(vTargetPosX, vTargetPosY);
-            MoveToTargetPos(batedSpeed_ms);
         }
     }
 }

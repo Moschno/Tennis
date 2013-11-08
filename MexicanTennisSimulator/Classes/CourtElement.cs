@@ -15,35 +15,41 @@ namespace MexicanTennisSimulator.Classes
 {
     abstract class CourtElement : FrameworkElement
     {
+        protected Point _vActPos;
+        protected Point _vTargetPos;
 
-        public static readonly DependencyProperty vActPosProperty =
-            DependencyProperty.Register("vActPos", typeof(Point), typeof(CourtElement));
-        public static readonly DependencyProperty vTargetPosProperty =
-            DependencyProperty.Register("vTargetPos", typeof(Point), typeof(CourtElement));
-
-        public Point vActPos
+        public virtual Point VActPos
         {
-            get { return (Point)GetValue(vActPosProperty); }
-            set { SetValue(vActPosProperty, value); }
+            get { return _vActPos; }
+            set { }
         }
 
-        public Point vTargetPos
+        public Point VTargetPos
         {
-            get { return (Point)GetValue(vTargetPosProperty); }
-            set { SetValue(vTargetPosProperty, value); }
+            get { return _vTargetPos; }
+            set { _vTargetPos = value; }
         }
-
-        private abstract void SetColor(Color color);
 
         protected CourtElement()
         {
-            
+        }
+
+        protected double MoveToTargetPos(double speed_ms)
+        {
+            double elapsedTime;
+            if (speed_ms > 0)
+                elapsedTime = CalcTimeTillTarget(speed_ms);
+            else
+                elapsedTime = 0;
+
+            _vActPos = _vTargetPos;
+            return elapsedTime;
         }
 
         protected double CalcTimeTillTarget(double speed_ms)
         {
-            double distanceX = Math.Abs(vTargetPos.X - vActPos.X);
-            double distanceY = Math.Abs(vTargetPos.Y - vActPos.Y);
+            double distanceX = Math.Abs(_vTargetPos.X - _vActPos.X);
+            double distanceY = Math.Abs(_vTargetPos.Y - _vActPos.Y);
             double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
             double distanceMeter = distancePixel * 10.9728 / 360;
             double time = distanceMeter / speed_ms;

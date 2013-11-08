@@ -20,7 +20,7 @@ namespace MexicanTennisSimulator
 {
     public partial class MainWindow : DXWindow
     {
-        private Ball _ball;
+        private Match _match;
         private Player _playerOne;
         private Player _playerTwo;
 
@@ -31,27 +31,20 @@ namespace MexicanTennisSimulator
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            Draw.DrawCourt(ref _rCourt);
-
-            Rally rallyProps;
-            rallyProps.Service = Players.One;
-            rallyProps.UpperSide = Players.One;
-
-            _playerOne.Prepare4Rally(rallyProps);
-            _playerTwo.Prepare4Rally(rallyProps);
+            _playerOne = new Player(8, 8, 8);
+            _playerTwo = new Player(4, 4, 4);
+            _match = new Match(ref _playerOne, ref _playerTwo);
+            _match.CreateTennisMatch();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            _playerOne.StartRally();
-            _playerTwo.StartRally();
+            var rally = new Rally(ref _playerOne, ref _playerTwo, eCourtElements.PlayerOne);
+            rally.StartRally();
+            tbZufallszahl.Text = rally.Winner.ToString();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void winMain_SizeChanged(object sender, SizeChangedEventArgs e)
         {
         }
     }

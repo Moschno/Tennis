@@ -9,7 +9,7 @@ namespace MexicanTennisSimulator.Classes
 {
     static class Probability
     {
-        public static bool GetTrueOrFalse(double getTrueProbability)
+        public static bool GetTrueOrFalse(double getTrueProbability) //todo: Wahrscheinleichkeitsberechnung anpassen
         {
             if (getTrueProbability < 0 || getTrueProbability > 100)
                 throw new ArgumentOutOfRangeException("trueProbabiliy", "Der Wert von 'trueProbabiliy' muss zwischen 0 und 100 liegen.");

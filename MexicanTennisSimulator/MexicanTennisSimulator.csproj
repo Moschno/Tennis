@@ -62,9 +62,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\Bat.cs" />
     <Compile Include="Classes\Cross.cs" />
-    <Compile Include="Classes\TennisMatch.cs" />
-    <Compile Include="Classes\vCourt.cs" />
+    <Compile Include="Classes\Rally.cs" />
+    <Compile Include="Classes\Referee.cs" />
+    <Compile Include="Classes\Match.cs" />
+    <Compile Include="Classes\Set.cs" />
     <Compile Include="StructsEnums.cs" />
   </ItemGroup>
   <ItemGroup>

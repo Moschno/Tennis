@@ -8,7 +8,7 @@
     Title="Mexican Tennis Simulator" Height="600" Width="1000"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen" MinWidth="1000" MinHeight="600"
-    dx:ThemeManager.ThemeName="Office2010Black" Icon="Images\32_32_Sombrero.png" SmallIcon="Images/16_16_Sombrero.png" Loaded="winMain_Loaded" SizeChanged="winMain_SizeChanged"
+    dx:ThemeManager.ThemeName="Office2010Black" Icon="Images\32_32_Sombrero.png" SmallIcon="Images/16_16_Sombrero.png" Loaded="winMain_Loaded"
     >
     <Grid x:Name="gridTennis">
         <Grid.ColumnDefinitions>
