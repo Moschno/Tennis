@@ -13,6 +13,7 @@ namespace MexicanTennisSimulator.Classes
         private Player _playerWithService;
         private Player _playerWithoutService;
         private Ball _gameBall;
+        private Bat _bat;
         private List<Bat> _bats;
         private eCourtElements _winner;
         private bool _rallyRunning;
@@ -45,60 +46,91 @@ namespace MexicanTennisSimulator.Classes
             _playerWithService = playerWithService;
             _playerWithoutService = playerWithoutService;
             _gameBall = new Ball();
+            _bats = new List<Bat>();
         }
 
         public void StartRally()
         {
-            _bats = new List<Bat>();
             if (!_rallyRunning && !_rallyFinished)
             {
                 _rallyRunning = true;
-                Bat.BatFinished += bat_BatFinished;
-                Bat.FirstServiceFinished += Bat_FirstServiceFinished;
-                Bat.SecondServiceFinished += Bat_SecondServiceFinished;
 
-                var bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
-                bat.StartBat();
-            }
-        }
+                _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                _bat.StartBat();
+                _bats.Add(_bat);
 
-        void Bat_FirstServiceFinished(object sender, BatFinishedEventArgs e)
-        {
-            _bats.Add((Bat)sender);
-            Bat bat;
-            switch (e.WhatHappend)
-            {
-                case eBatEnding.BallIsOut:
-                    _gameBall = new Ball();
-                    bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
-                    bat.StartBat();
-                    break;
-                case eBatEnding.BallIsReturned:
-                    bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Return);
-                    bat.StartBat();
-                    break;
-                case eBatEnding.BallIsBroken:
-                    _gameBall = new Ball();
-                    bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
-                    bat.StartBat();
-                    break;
-                case eBatEnding.BallIsNotReturned:
+                if (_bat.WhatHappend == eBatEnding.Let)
+                {
+                    do
+                    {
+                        _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                        _bat.StartBat();
+                        _bats.Add(_bat); 
+                    } while (_bat.WhatHappend == eBatEnding.Let);
+                }
+                else if (_bat.WhatHappend == eBatEnding.BallIsOut)
+                {
+                    _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
+                    _bat.StartBat();
+                    _bats.Add(_bat);
+
+                    if (_bat.WhatHappend == eBatEnding.Let)
+                    {
+                        do
+                        {
+                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
+                            _bat.StartBat();
+                            _bats.Add(_bat);
+                        } while (_bat.WhatHappend == eBatEnding.Let);
+                    }
+                }
+
+                if (_bat.WhatHappend == eBatEnding.Ace ||
+                    _bat.WhatHappend == eBatEnding.BallIsNotReturned)
+                {
                     winner = eCourtElements.PlayerWithService;
-                    break;
-                case eBatEnding.Ace:
-                    winner = eCourtElements.PlayerWithService;
-                    break;
+                    return;
+                }
+                else
+                {
+                    bool servicePlayerBatBall = false;
+                    if (_bat.WhatHappend != eBatEnding.BallIsBroken)
+                    {
+                        do
+                        {
+                            if (servicePlayerBatBall)
+                            {
+                                _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.Return);
+                                servicePlayerBatBall = false;
+                            }
+                            else
+                            {
+                                _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Return);
+                                servicePlayerBatBall = true;
+                            }
+
+                            _bat.StartBat();
+                            _bats.Add(_bat);
+                        } while (_bat.WhatHappend == eBatEnding.BallIsReturned); 
+                    }
+
+                    if (_bat.WhatHappend == eBatEnding.BallIsBroken)
+                    {
+                        _rallyRunning = false;
+                        StartRally();
+                        return;
+                    }
+
+                    if (servicePlayerBatBall)
+                    {
+                        winner = eCourtElements.PlayerWithService
+                    }
+                    else
+                    {
+                        winner = eCourtElements.PlayerWithoutService;
+                    } 
+                }
             }
-        }
-
-        void Bat_SecondServiceFinished(object sender, BatFinishedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        void bat_BatFinished(object sender, BatFinishedEventArgs e)
-        {
-            System.Windows.MessageBox.Show("BatFinished");
         }
     }
 }

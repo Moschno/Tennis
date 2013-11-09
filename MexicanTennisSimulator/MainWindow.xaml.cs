@@ -48,7 +48,7 @@ namespace MexicanTennisSimulator
         {
             tbZufallszahl.Text = e.Winner.ToString();
             var rally = (Rally)sender;
-            tbZufallszahl2.Text = rally.Bats[0].WhatHappend.ToString();
+            tbZufallszahl2.Text = rally.Bats[rally.Bats.Count - 1].WhatHappend.ToString();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

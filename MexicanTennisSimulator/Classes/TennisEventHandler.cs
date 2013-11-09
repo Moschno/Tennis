@@ -22,13 +22,12 @@ namespace MexicanTennisSimulator.Classes
     class BatFinishedEventArgs : EventArgs
     {
         public readonly eBatEnding WhatHappend;
-        public readonly eBatBeginning Bat;
-        public readonly Player PlayerWithBat;
-        public readonly Player PlayerWithoutBat;
+        public readonly Player PlayerWhoBattedBall;
 
-        public BatFinishedEventArgs(eBatEnding whatHappend)
+        public BatFinishedEventArgs(eBatEnding whatHappend, Player playerWithBat)
         {
             WhatHappend = whatHappend;
+            PlayerWhoBattedBall = playerWithBat;
         }
     }
 }

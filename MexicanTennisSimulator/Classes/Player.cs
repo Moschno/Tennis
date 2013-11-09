@@ -46,7 +46,7 @@ namespace MexicanTennisSimulator.Classes
             return BatBall(135, -210, strength);
         }
 
-        public void DoSecondService()
+        public sBatProps DoSecondService()
         {
             int strength;
             if (_strength > 3)
@@ -54,7 +54,7 @@ namespace MexicanTennisSimulator.Classes
             else
                 strength = _strength;
 
-            BatBall(100, -180, strength);
+            return BatBall(100, -180, strength);
         }
 
         public void ReturnBall()

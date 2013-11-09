@@ -9,8 +9,6 @@ namespace MexicanTennisSimulator.Classes
     class Bat
     {
         public static event BatFinishedEventHandler BatFinished;
-        public static event BatFinishedEventHandler FirstServiceFinished;
-        public static event BatFinishedEventHandler SecondServiceFinished;
 
         private Player _playerWithBat;
         private Player _playerWithoutBat;
@@ -31,21 +29,6 @@ namespace MexicanTennisSimulator.Classes
             {
                 _batFinished = true;
                 _whatHappend = value;
-                switch (_bat)
-                {
-                    case eBatBeginning.Default:
-                        BatFinished(this, new BatFinishedEventArgs(value));
-                        break;
-                    case eBatBeginning.FirstService:
-                        FirstServiceFinished(this, new BatFinishedEventArgs(value));
-                        break;
-                    case eBatBeginning.SecondService:
-                        SecondServiceFinished(this, new BatFinishedEventArgs(value));
-                        break;
-                    case eBatBeginning.Return:
-                        BatFinished(this, new BatFinishedEventArgs(value));
-                        break;
-                }
             }
         }
 
@@ -61,29 +44,66 @@ namespace MexicanTennisSimulator.Classes
         {
             sBatProps tempBatProps, finalBatProps;
 
+            tempBatProps = _playerWithBat.DoFirstService();
+            finalBatProps = DisturbBat(tempBatProps);
+
+            if (Probability.GetTrueOrFalse("10"))
+            {
+                whatHappend = eBatEnding.BallIsBroken;
+                return;
+            }
+
+            bool ballOut = CheckIfBallOut(finalBatProps);
+            if (ballOut)
+            {
+                whatHappend = eBatEnding.BallIsOut;
+                return;
+            }
+
             if (_bat == eBatBeginning.FirstService)
             {
-                tempBatProps = _playerWithBat.DoFirstService();
-                finalBatProps = DisturbBat(tempBatProps);
-                bool ballOut = CheckIfBallOut(finalBatProps);
-                if (ballOut)
+                if (Probability.GetTrueOrFalse("10"))
                 {
-                    whatHappend = eBatEnding.BallIsOut;
+                    whatHappend = eBatEnding.Ace;
+                    return;
                 }
                 else
                 {
-                    if (Probability.GetTrueOrFalse(50))
-                    {
-                        whatHappend = eBatEnding.Ace;
-                    }
-                    else
-                    {
-                        whatHappend = eBatEnding.BallIsNotReturned; 
-                    }
-                } 
+                    whatHappend = eBatEnding.BallIsReturned;
+                    return;
+                }
             }
-
-            return;
+            else if (_bat == eBatBeginning.SecondService)
+            {
+                if (Probability.GetTrueOrFalse("10"))
+                {
+                    whatHappend = eBatEnding.Ace;
+                    return;
+                }
+                else
+                {
+                    whatHappend = eBatEnding.BallIsReturned;
+                    return;
+                }
+            }
+            else
+            {
+                if (Probability.GetTrueOrFalse("10"))
+                {
+                    whatHappend = eBatEnding.BallIsNotReturned;
+                    return;
+                }
+                else if (Probability.GetTrueOrFalse("50"))
+                {
+                    whatHappend = eBatEnding.BallIsReturned;
+                    return;
+                }
+                else
+                {
+                    whatHappend = eBatEnding.BallIsOut;
+                    return;
+                }
+            }
         }
 
         private sBatProps DisturbBat(sBatProps batProps) //todo: Schlag stören

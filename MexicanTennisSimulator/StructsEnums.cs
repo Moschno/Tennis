@@ -13,6 +13,6 @@ namespace MexicanTennisSimulator
     public struct sBatProps { public eBats Bat; public Point vStartingPos; public Point vTargetPos; public double Speed; };
     public enum eCourtElements { Default, PlayerOne, PlayerTwo, PlayerWithService, PlayerWithoutService, PlayerWithBat, PlayerWithoutBat, GameBall };
     public enum eBats { Default, Service, Forehand, Backhand };
-    public enum eBatEnding { Default, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotReturned, Ace };
+    public enum eBatEnding { Default, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotReturned, Ace , Let};
     public enum eBatBeginning { Default, FirstService, SecondService, Return };
 }
