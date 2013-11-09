@@ -64,10 +64,12 @@
     </Compile>
     <Compile Include="Classes\Bat.cs" />
     <Compile Include="Classes\Cross.cs" />
+    <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\Rally.cs" />
     <Compile Include="Classes\Referee.cs" />
     <Compile Include="Classes\Match.cs" />
     <Compile Include="Classes\Set.cs" />
+    <Compile Include="Classes\TennisEventHandler.cs" />
     <Compile Include="StructsEnums.cs" />
   </ItemGroup>
   <ItemGroup>

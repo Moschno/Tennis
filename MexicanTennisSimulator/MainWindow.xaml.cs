@@ -39,9 +39,16 @@ namespace MexicanTennisSimulator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var rally = new Rally(ref _playerOne, ref _playerTwo, eCourtElements.PlayerOne);
+            var rally = new Rally(ref _playerOne, ref _playerTwo);
+            rally.RallyFinished += rally_RallyFinished;
             rally.StartRally();
-            tbZufallszahl.Text = rally.Winner.ToString();
+        }
+
+        void rally_RallyFinished(object sender, FinishedEventArgs e)
+        {
+            tbZufallszahl.Text = e.Winner.ToString();
+            var rally = (Rally)sender;
+            tbZufallszahl2.Text = rally.Bats[0].WhatHappend.ToString();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

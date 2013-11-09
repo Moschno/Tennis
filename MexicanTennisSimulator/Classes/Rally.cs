@@ -8,91 +8,97 @@ namespace MexicanTennisSimulator.Classes
 {
     class Rally
     {
-        private Player _playerOne;
-        private Player _playerTwo;
+        public event FinishedEventHandler RallyFinished;
+
+        private Player _playerWithService;
+        private Player _playerWithoutService;
         private Ball _gameBall;
-        private eCourtElements _service;
+        private List<Bat> _bats;
         private eCourtElements _winner;
         private bool _rallyRunning;
+        private bool _rallyFinished;
+
+        public List<Bat> Bats
+        {
+            get { return _bats; }
+        }
+
+        private eCourtElements winner
+        {
+            get { return _winner; }
+            set
+            {
+                _winner = value;
+                _rallyRunning = false;
+                _rallyFinished = true;
+                RallyFinished(this, new FinishedEventArgs(value));
+            }
+        }
 
         public eCourtElements Winner
         {
             get { return _winner; }
         }
 
-        public Rally(ref Player playerOne, ref Player playerTwo, eCourtElements service)
+        public Rally(ref Player playerWithService, ref Player playerWithoutService)
         {
-            _playerOne = playerOne;
-            _playerTwo = playerTwo;
-            _service = service;
+            _playerWithService = playerWithService;
+            _playerWithoutService = playerWithoutService;
             _gameBall = new Ball();
         }
 
         public void StartRally()
         {
-            if (!_rallyRunning)
+            _bats = new List<Bat>();
+            if (!_rallyRunning && !_rallyFinished)
             {
                 _rallyRunning = true;
-                sBatProps tempBatProps, finalBatProps;
-                Player playerWithService;
-                Player playerWithoutService;
-                if (_service == eCourtElements.PlayerOne)
-                {
-                    playerWithService = _playerOne;
-                    playerWithoutService = _playerTwo;
-                }
-                else if (_service == eCourtElements.PlayerTwo)
-                {
-                    playerWithService = _playerTwo;
-                    playerWithoutService = _playerOne;
-                }
-                else
-                    throw new Exception();
+                Bat.BatFinished += bat_BatFinished;
+                Bat.FirstServiceFinished += Bat_FirstServiceFinished;
+                Bat.SecondServiceFinished += Bat_SecondServiceFinished;
 
-                tempBatProps = playerWithService.DoFirstService();
-                finalBatProps = DisturbBat(tempBatProps);
-                bool ballOut = CheckIfBallOut(finalBatProps);
-                if (ballOut)
-                {
-                    _rallyRunning = false;
-                    if (_service == eCourtElements.PlayerOne)
-                    {
-                        _winner = eCourtElements.PlayerTwo;
-                        return;
-                    }
-                    else
-                    {
-                        _winner = eCourtElements.PlayerOne;
-                        return;
-                    }
-                }
-                else
-                {
-                    _rallyRunning = false;
-                    _winner = _service;
-                    return;
-                }
+                var bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                bat.StartBat();
             }
         }
 
-        private sBatProps DisturbBat(sBatProps batProps) //todo: Schlag stören
+        void Bat_FirstServiceFinished(object sender, BatFinishedEventArgs e)
         {
-            return batProps;
-        }
-
-        private bool CheckIfBallOut(sBatProps batProbs)
-        {
-            var firstLandingPos = batProbs.vTargetPos;
-            firstLandingPos.X = Math.Abs(firstLandingPos.X);
-            firstLandingPos.Y = Math.Abs(firstLandingPos.Y);
-            if (firstLandingPos.X >= Match.BallServiceOutRightX
-                || firstLandingPos.X <= Match.BallServiceOutLeftX
-                || firstLandingPos.Y >= Match.BallServiceOutY)
+            _bats.Add((Bat)sender);
+            Bat bat;
+            switch (e.WhatHappend)
             {
-                return true;
+                case eBatEnding.BallIsOut:
+                    _gameBall = new Ball();
+                    bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
+                    bat.StartBat();
+                    break;
+                case eBatEnding.BallIsReturned:
+                    bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Return);
+                    bat.StartBat();
+                    break;
+                case eBatEnding.BallIsBroken:
+                    _gameBall = new Ball();
+                    bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                    bat.StartBat();
+                    break;
+                case eBatEnding.BallIsNotReturned:
+                    winner = eCourtElements.PlayerWithService;
+                    break;
+                case eBatEnding.Ace:
+                    winner = eCourtElements.PlayerWithService;
+                    break;
             }
-            else
-                return false;
+        }
+
+        void Bat_SecondServiceFinished(object sender, BatFinishedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void bat_BatFinished(object sender, BatFinishedEventArgs e)
+        {
+            System.Windows.MessageBox.Show("BatFinished");
         }
     }
 }
