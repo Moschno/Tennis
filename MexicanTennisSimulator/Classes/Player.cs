@@ -35,11 +35,6 @@ namespace MexicanTennisSimulator.Classes
             _precision = precision;
         }
 
-        void Player_OtherPlayerBattedBall()
-        {
-            TryToReachBallBatPoint();
-        }
-
         public sBatProps DoFirstService()
         {
             int strength = _strength;
@@ -57,16 +52,19 @@ namespace MexicanTennisSimulator.Classes
             return BatBall(100, -180, strength);
         }
 
-        public void ReturnBall()
+        public sBatProps DoBat()
         {
-            BatBall(100, -180, _strength);
+            return BatBall(100, -180, _strength);
         }
 
-        private void TryToReachBallBatPoint()
+        public sBatProps DoReturn()
         {
-            VTargetPos = CalcBallBatPoint();
-            //CalcTimeTillTarget(MaxPlayerSpeed_KmH / 3.6);
-            //MoveToTargetPos(MaxPlayerSpeed_KmH / 3.6);
+            return BatBall(100, -180, _strength);
+        }
+
+        public sBatProps RunToBatPosition()
+        {
+            return BatBall(100, -180, _strength);
         }
 
         private sBatProps BatBall(double vTargetPosX, double vTargetPosY, int strength)
@@ -75,8 +73,9 @@ namespace MexicanTennisSimulator.Classes
             var vTargetPosBall = new Point(vTargetPosX, vTargetPosY);
 
             sBatProps batProbs = new sBatProps();
-            batProbs.Speed = batSpeed_ms;
-            batProbs.vTargetPos = vTargetPosBall;
+            batProbs.SpeedTillFirstLanding_KmH = batSpeed_ms * 3.6;
+            batProbs.vFirstLandingPos = vTargetPosBall;
+            batProbs.vBatPos = VActPos;
 
             return batProbs;
         }

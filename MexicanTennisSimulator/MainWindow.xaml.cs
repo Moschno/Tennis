@@ -46,9 +46,26 @@ namespace MexicanTennisSimulator
 
         void rally_RallyFinished(object sender, FinishedEventArgs e)
         {
-            tbZufallszahl.Text = e.Winner.ToString();
+            var nL = Environment.NewLine;
             var rally = (Rally)sender;
-            tbZufallszahl2.Text = rally.Bats[rally.Bats.Count - 1].WhatHappend.ToString();
+            string txtPlayer = "", txtEnding = "", txtBeginning = "";
+            foreach (var item in rally.Bats)
+            {
+                txtEnding += item.WhatHappend.ToString() + nL;
+                txtBeginning += item.BatBeginning.ToString() + nL;
+                if (item.PlayerWithBat.Equals(_playerOne))
+                    txtPlayer += eCourtElements.PlayerOne.ToString() + nL;
+                else
+                    txtPlayer += eCourtElements.PlayerTwo.ToString() + nL;    
+            }
+
+            tbPlayer.Text = txtPlayer;
+            tbBeginning.Text = txtBeginning;
+            tbEnding.Text = txtEnding;
+            if (rally.Winner.Equals(_playerOne))
+                tbWinner.Text = eCourtElements.PlayerOne.ToString();
+            else
+                tbWinner.Text = eCourtElements.PlayerTwo.ToString();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

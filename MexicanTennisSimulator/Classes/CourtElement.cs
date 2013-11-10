@@ -18,10 +18,9 @@ namespace MexicanTennisSimulator.Classes
         protected Point _vActPos;
         protected Point _vTargetPos;
 
-        public virtual Point VActPos
+        public Point VActPos
         {
             get { return _vActPos; }
-            set { }
         }
 
         public Point VTargetPos
@@ -34,26 +33,16 @@ namespace MexicanTennisSimulator.Classes
         {
         }
 
-        protected double MoveToTargetPos(double speed_ms)
+        public double MoveToTargetPos(double speed_KmH)
         {
             double elapsedTime;
-            if (speed_ms > 0)
-                elapsedTime = CalcTimeTillTarget(speed_ms);
+            if (speed_KmH > 0)
+                elapsedTime = Bat.CalcTimeTillTarget(_vActPos, _vTargetPos, speed_KmH);
             else
                 elapsedTime = 0;
 
             _vActPos = _vTargetPos;
             return elapsedTime;
-        }
-
-        protected double CalcTimeTillTarget(double speed_ms)
-        {
-            double distanceX = Math.Abs(_vTargetPos.X - _vActPos.X);
-            double distanceY = Math.Abs(_vTargetPos.Y - _vActPos.Y);
-            double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
-            double distanceMeter = distancePixel * 10.9728 / 360;
-            double time = distanceMeter / speed_ms;
-            return time;
         }
     }
 }

@@ -19,12 +19,6 @@ namespace MexicanTennisSimulator.Classes
         private Point _firstLandingPos;
         private Player _lastBatPlayer;
 
-        public override Point VActPos
-        {
-            get { return _vActPos; }
-            set { _vActPos = value; }
-        }
-
         public Point FirstLandingPos
         {
             get { return _firstLandingPos; }
@@ -42,7 +36,7 @@ namespace MexicanTennisSimulator.Classes
 
         public void GotBatted(Player ballBatter, double speed_ms)
         {
-            MoveToTargetPos(speed_ms);
+            //MoveToTargetPos(speed_ms);
         }
 
         private int CompareDistances(Point startPos, Point targetPos1, Point targetPos2)
