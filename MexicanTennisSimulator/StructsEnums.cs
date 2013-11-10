@@ -31,6 +31,6 @@ namespace MexicanTennisSimulator
                                };
     public enum eBats { Default, Volley, Smash, Lob, Cross, Longline, Service};
     public enum eBatSide { Default, Forehand, Backhand };
-    public enum eBatEnding { Default, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotReturned, Ace , Let, DoubleFault};
+    public enum eBatEnding { Default, BallIsTaken, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotTaken, Ace , Let, DoubleFault};
     public enum eBatBeginning { Bat, FirstService, SecondService, Return };
 }

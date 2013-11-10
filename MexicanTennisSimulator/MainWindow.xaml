@@ -21,5 +21,6 @@
             <Label Content="Winner"/>
         </Label>
         <dxe:TextEdit x:Name="tbWinner" HorizontalAlignment="Left" Margin="27,117,0,0" VerticalAlignment="Top" Width="117"/>
+        <TextBox x:Name="tbBat" HorizontalAlignment="Left" Height="176" Margin="659,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="142"/>
     </Grid>
 </dx:DXWindow>

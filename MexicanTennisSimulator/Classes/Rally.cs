@@ -85,7 +85,7 @@ namespace MexicanTennisSimulator.Classes
                 {
                     _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Return);
                     StartAndSaveBat();
-                    if (_bat.WhatHappend == eBatEnding.BallIsNotReturned)
+                    if (_bat.WhatHappend == eBatEnding.BallIsNotTaken)
                     {
                         winner = eCourtElements.PlayerWithoutService;
                         return;
@@ -93,7 +93,7 @@ namespace MexicanTennisSimulator.Classes
                 }
 
                 if (_bat.WhatHappend == eBatEnding.Ace ||
-                    _bat.WhatHappend == eBatEnding.BallIsNotReturned ||
+                    _bat.WhatHappend == eBatEnding.BallIsNotTaken ||
                     _bat.WhatHappend == eBatEnding.BallIsOut)
                 {
                     winner = eCourtElements.PlayerWithService;
@@ -116,7 +116,7 @@ namespace MexicanTennisSimulator.Classes
                             servicePlayerHasToBatBall = true;
                         }
                         StartAndSaveBat();
-                    } while (_bat.WhatHappend == eBatEnding.BallIsReturned); 
+                    } while (_bat.WhatHappend == eBatEnding.BallIsTaken); 
                 }
 
                 if (_bat.WhatHappend == eBatEnding.BallIsBroken)

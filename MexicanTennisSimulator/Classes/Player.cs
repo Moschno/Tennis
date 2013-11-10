@@ -38,7 +38,7 @@ namespace MexicanTennisSimulator.Classes
         public sBatProps DoFirstService()
         {
             int strength = _strength;
-            return BatBall(135, -210, strength);
+            return BatBall(135, -210, eBats.Service);
         }
 
         public sBatProps DoSecondService()
@@ -49,33 +49,33 @@ namespace MexicanTennisSimulator.Classes
             else
                 strength = _strength;
 
-            return BatBall(100, -180, strength);
+            return BatBall(100, -180, eBats.Service);
         }
 
         public sBatProps DoBat()
         {
-            return BatBall(100, -180, _strength);
+            return BatBall(100, -180, eBats.Default);
         }
 
         public sBatProps DoReturn()
         {
-            return BatBall(100, -180, _strength);
+            return BatBall(100, -180, eBats.Default);
         }
 
-        public sBatProps RunToBatPosition()
+        public void RunToBatPosition()
         {
-            return BatBall(100, -180, _strength);
         }
 
-        private sBatProps BatBall(double vTargetPosX, double vTargetPosY, int strength)
+        private sBatProps BatBall(double vTargetPosX, double vTargetPosY, eBats bat)
         {
-            double batSpeed_ms = ConvertStrengthToSpeed_ms(strength);
+            double batSpeed_ms = ConvertStrengthToSpeed_ms(_strength);
             var vTargetPosBall = new Point(vTargetPosX, vTargetPosY);
 
             sBatProps batProbs = new sBatProps();
-            batProbs.SpeedTillFirstLanding_KmH = batSpeed_ms * 3.6;
+            batProbs.SpeedTillFirstLanding_KmH = batSpeed_ms;
             batProbs.vFirstLandingPos = vTargetPosBall;
             batProbs.vBatPos = VActPos;
+            batProbs.Bat = bat;
 
             return batProbs;
         }
@@ -98,7 +98,7 @@ namespace MexicanTennisSimulator.Classes
         private double ConvertStrengthToSpeed_ms(int strength) //todo: Funktion muss noch angepasst werden.
         {
             double interval = (MaxGlobalBatSpeed_KmH - MinGlobalBatSpeed_KmH) / 10;
-            double batSpeed = MinGlobalBatSpeed_KmH / 3.6 + strength * interval;
+            double batSpeed = MinGlobalBatSpeed_KmH + strength * interval;
             return batSpeed;
         }
     }

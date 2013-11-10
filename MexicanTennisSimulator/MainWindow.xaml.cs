@@ -48,11 +48,12 @@ namespace MexicanTennisSimulator
         {
             var nL = Environment.NewLine;
             var rally = (Rally)sender;
-            string txtPlayer = "", txtEnding = "", txtBeginning = "";
+            string txtPlayer = "", txtEnding = "", txtBeginning = "", txtBat = "";
             foreach (var item in rally.Bats)
             {
                 txtEnding += item.WhatHappend.ToString() + nL;
                 txtBeginning += item.BatBeginning.ToString() + nL;
+                txtBat += item.FinalBatProps.Bat.ToString() + nL;
                 if (item.PlayerWithBat.Equals(_playerOne))
                     txtPlayer += eCourtElements.PlayerOne.ToString() + nL;
                 else
@@ -62,6 +63,7 @@ namespace MexicanTennisSimulator
             tbPlayer.Text = txtPlayer;
             tbBeginning.Text = txtBeginning;
             tbEnding.Text = txtEnding;
+            tbBat.Text = txtBat;
             if (rally.Winner.Equals(_playerOne))
                 tbWinner.Text = eCourtElements.PlayerOne.ToString();
             else

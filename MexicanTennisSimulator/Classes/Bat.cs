@@ -31,6 +31,11 @@ namespace MexicanTennisSimulator.Classes
             get { return _batBeginning; }
         }
 
+        public sBatProps FinalBatProps
+        {
+            get { return _finalBatProps; }
+        }
+
         public eBatEnding WhatHappend
         {
             get { return _whatHappend; }
@@ -79,15 +84,17 @@ namespace MexicanTennisSimulator.Classes
                         break;
                 }
 
-                _tempBatProps = DisturbBat();
+                DisturbBat();
                 _tempBatProps.TimeTillFirstTarget = CalcTimeTillTarget(_tempBatProps.vBatPos
                                                                      , _tempBatProps.vFirstLandingPos
                                                                      , _tempBatProps.SpeedTillFirstLanding_KmH
                                                                      );
+                CalcSecondLanding();
                 _tempBatProps.TimeTillSecondTarget = CalcTimeTillTarget(_tempBatProps.vFirstLandingPos
                                                                      , _tempBatProps.vSecondLandingPos
                                                                      , _tempBatProps.SpeedTillSecondLanding_KmH
                                                                      );
+                _finalBatProps = _tempBatProps;
                 if (CheckIfBallIsBroken())
                 {
                     whatHappend = eBatEnding.BallIsBroken;
@@ -97,6 +104,22 @@ namespace MexicanTennisSimulator.Classes
                 if (CheckIfTryToTakeBall())
                 {
                     _playerWithoutBat.RunToBatPosition();
+                    if (Probability.GetTrueOrFalse("80"))
+                    {
+                        _tempBatProps.BallIsTaken = true; 
+                    }
+                    if (_tempBatProps.BallIsTaken)
+                    {
+                        if (_batBeginning == eBatBeginning.FirstService ||
+                                        _batBeginning == eBatBeginning.SecondService)
+                        {
+                            whatHappend = eBatEnding.BallIsReturned;
+                        }
+                        else
+                            whatHappend = eBatEnding.BallIsTaken;
+                    }
+                    else
+                        whatHappend = eBatEnding.BallIsNotTaken;
                 }
                 if (CheckIfBallIsOut())
                 {
@@ -119,9 +142,8 @@ namespace MexicanTennisSimulator.Classes
             return true;
         }
 
-        private sBatProps DisturbBat() //todo: Schlag stören
+        private void DisturbBat() //todo: Schlag stören
         {
-            return _tempBatProps;
         }
 
         public static double CalcTimeTillTarget(Point startPos, Point targetPos, double speed_KmH)
@@ -130,19 +152,30 @@ namespace MexicanTennisSimulator.Classes
             double distanceY = Math.Abs(targetPos.Y - startPos.Y);
             double distancePixel = Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
             double distanceMeter = distancePixel * 10.9728 / 360;
-            double time = distanceMeter / speed_KmH / 3.6;
+            double time = distanceMeter / (speed_KmH / 3.6);
             return time;
         }
 
-        private void CalcSecondLandingPos()
+        private void CalcSecondLanding()
         {
             if (_tempBatProps.Bat == eBats.Service || _tempBatProps.Bat == eBats.Smash)
             {
-                _tempBatProps.vSecondLandingPos = new Point(999, -999);
+                _tempBatProps.vSecondLandingPos = new Point(9999, -9999);
+                _tempBatProps.SpeedTillSecondLanding_KmH = _tempBatProps.SpeedTillFirstLanding_KmH;
             }
             else
             {
-                
+                double distanceX = Math.Abs(_tempBatProps.vFirstLandingPos.X - _tempBatProps.vBatPos.X);
+                double distanceY = Math.Abs(_tempBatProps.vFirstLandingPos.Y - _tempBatProps.vBatPos.Y);
+
+                distanceX /= 3;
+                distanceY /= 3;
+
+                double SecondLandingX = _tempBatProps.vFirstLandingPos.X + distanceX;
+                double SecondLandingY = _tempBatProps.vFirstLandingPos.Y + distanceY;
+
+                _tempBatProps.vSecondLandingPos = new Point(SecondLandingX, SecondLandingY);
+                _tempBatProps.SpeedTillSecondLanding_KmH = _tempBatProps.SpeedTillSecondLanding_KmH / 2;
             }
         }
 
