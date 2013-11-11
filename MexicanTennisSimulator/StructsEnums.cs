@@ -14,11 +14,14 @@ namespace MexicanTennisSimulator
                             ; public Point vBatPos
                             ; public Point vFirstLandingPos
                             ; public Point vSecondLandingPos
+                            ; public Point vTakePos
                             ; public double SpeedTillFirstLanding_KmH
                             ; public double SpeedTillSecondLanding_KmH
                             ; public double TimeTillFirstTarget
                             ; public double TimeTillSecondTarget
-                            ; public bool BallIsTaken; 
+                            ; public bool BallIsTaken 
+                            ; public eTaking TakingDifficulty
+                            ; public eBallSeeableOut BallSeeableOut;
                             };
     public enum eCourtElements { Default
                                , PlayerOne
@@ -33,4 +36,6 @@ namespace MexicanTennisSimulator
     public enum eBatSide { Default, Forehand, Backhand };
     public enum eBatEnding { Default, BallIsTaken, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotTaken, Ace , Let, DoubleFault};
     public enum eBatBeginning { Bat, FirstService, SecondService, Return };
+    public enum eTaking { Easy, Medium, Hard };
+    public enum eBallSeeableOut { ClearlyVisible, Maybe, CantSeeIt };
 }

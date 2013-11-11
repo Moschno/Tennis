@@ -15,6 +15,9 @@ namespace MexicanTennisSimulator.Classes
     {
         public static readonly double MinGlobalBatSpeed_KmH = 70;
         public static readonly double MaxGlobalBatSpeed_KmH = 130;
+        public static readonly double MaxGlobalMovementSpeed_KmH = 20;
+        public static readonly Point ServiceWithBatPos = new Point(-50, 400);
+        public static readonly Point ServiceWithoutBatPos = new Point(100, -400);
         private int _strength;
         private int _velocity;
         private int _precision;
@@ -38,7 +41,7 @@ namespace MexicanTennisSimulator.Classes
         public sBatProps DoFirstService()
         {
             int strength = _strength;
-            return BatBall(135, -210, eBats.Service);
+            return BatBall(90, -190, eBats.Service);
         }
 
         public sBatProps DoSecondService()
