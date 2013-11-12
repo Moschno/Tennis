@@ -16,11 +16,13 @@ namespace MexicanTennisSimulator
                             ; public Point vSecondLandingPos
                             ; public Point vTakePos
                             ; public double SpeedTillFirstLanding_KmH
-                            ; public double SpeedTillSecondLanding_KmH
+                            ; public double SpeedFromFirstTillSecondLanding_KmH
                             ; public double TimeTillFirstTarget
-                            ; public double TimeTillSecondTarget
+                            ; public double TimeFromFirstTillSecondTarget
                             ; public bool BallIsTaken 
                             ; public eTaking TakingDifficulty
+                            ; public bool BallIsBroken
+                            ; public bool BallWillLandOut
                             ; public eBallSeeableOut BallSeeableOut;
                             };
     public enum eCourtElements { Default
@@ -32,10 +34,9 @@ namespace MexicanTennisSimulator
                                , PlayerWithoutBat
                                , GameBall 
                                };
-    public enum eBats { Default, Volley, Smash, Lob, Cross, Longline, Service};
-    public enum eBatSide { Default, Forehand, Backhand };
-    public enum eBatEnding { Default, BallIsTaken, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotTaken, Ace , Let, DoubleFault};
-    public enum eBatBeginning { Bat, FirstService, SecondService, Return };
-    public enum eTaking { Easy, Medium, Hard };
-    public enum eBallSeeableOut { ClearlyVisible, Maybe, CantSeeIt };
+    public enum eBats { NotSet, Volley, Smash, Lob, Cross, Longline, Service, Return};
+    public enum eBatResult { NotSet, BallIsTaken, BallIsOut, BallIsReturned, BallIsBroken, BallIsNotTaken, Ace , Let, };
+    public enum eBatType { NotSet, Bat, FirstService, SecondService, Return };
+    public enum eTaking { NotSet, Easy, Medium, Hard };
+    public enum eBallSeeableOut { NotSet, ClearlyNotOut, ClearlyVisibleOut, MaybeOut, CantSeeIfOut };
 }

@@ -14,19 +14,19 @@ namespace MexicanTennisSimulator.Classes
         private Player _playerWithBat;
         private Player _playerWithoutBat;
         private Ball _gameBall;
-        private eBatBeginning _batBeginning;
+        private eBatType _batBeginning;
         private sBatProps _tempBatProps;
         private sBatProps _finalBatProps;
         private bool _batRunning;
         private bool _batFinished;
-        private eBatEnding _whatHappend;
+        private eBatResult _whatHappend;
 
         public Player PlayerWithBat
         {
             get { return _playerWithBat; }
         }
 
-        public eBatBeginning BatBeginning
+        public eBatType BatBeginning
         {
             get { return _batBeginning; }
         }
@@ -36,23 +36,24 @@ namespace MexicanTennisSimulator.Classes
             get { return _finalBatProps; }
         }
 
-        public eBatEnding WhatHappend
+        public eBatResult WhatHappend
         {
             get { return _whatHappend; }
         }
 
-        private eBatEnding whatHappend
+        private eBatResult whatHappend
         {
             get { return _whatHappend; }
             set
             {
+                RotateVirtualFieldForNextBat();
                 _batFinished = true;
                 _batRunning = false;
                 _whatHappend = value;
             }
         }
 
-        public Bat(ref Player playerWithBat, ref Player playerWithoutBat, ref Ball gameBall, eBatBeginning batBeginning = eBatBeginning.Bat)
+        public Bat(ref Player playerWithBat, ref Player playerWithoutBat, ref Ball gameBall, eBatType batBeginning = eBatType.Bat)
         {
             _playerWithBat = playerWithBat;
             _playerWithoutBat = playerWithoutBat;
@@ -68,77 +69,76 @@ namespace MexicanTennisSimulator.Classes
 
                 switch (_batBeginning)
                 {
-                    case eBatBeginning.Bat:
+                    case eBatType.Bat:
                         _tempBatProps = _playerWithBat.DoBat();
                         break;
-                    case eBatBeginning.FirstService:
+                    case eBatType.FirstService:
                         SetPlayersToServicePositions();
                         _tempBatProps = _playerWithBat.DoFirstService();
                         break;
-                    case eBatBeginning.SecondService:
+                    case eBatType.SecondService:
                         SetPlayersToServicePositions();
                         _tempBatProps = _playerWithBat.DoSecondService();
                         break;
-                    case eBatBeginning.Return:
+                    case eBatType.Return:
                         _tempBatProps = _playerWithBat.DoReturn();
                         break;
                 }
 
-                DisturbBat();
-                _tempBatProps.TimeTillFirstTarget = CalcTimeTillTarget(_tempBatProps.vBatPos
-                                                                     , _tempBatProps.vFirstLandingPos
-                                                                     , _tempBatProps.SpeedTillFirstLanding_KmH
-                                                                     );
-                CalcSecondLanding();
-                _tempBatProps.TimeTillSecondTarget = CalcTimeTillTarget(_tempBatProps.vFirstLandingPos
-                                                                     , _tempBatProps.vSecondLandingPos
-                                                                     , _tempBatProps.SpeedTillSecondLanding_KmH
-                                                                     );
-                _finalBatProps = _tempBatProps;
-                if (CheckIfBallIsBroken())
+                CalcBatProbs();
+
+                if (_finalBatProps.BallIsBroken)
                 {
-                    whatHappend = eBatEnding.BallIsBroken;
+                    whatHappend = eBatResult.BallIsBroken;
                     return;
                 }
 
-                if (CheckIfTryToTakeBall())
+                if (_finalBatProps.BallIsTaken)
                 {
                     _playerWithoutBat.MoveToTargetPos(Player.MaxGlobalMovementSpeed_KmH);
-                    if (_tempBatProps.TakingDifficulty == eTaking.Hard)
+                    if (_batBeginning == eBatType.FirstService ||
+                        _batBeginning == eBatType.SecondService)
                     {
-                        if (Probability.GetTrueOrFalse("40"))
-                            _finalBatProps.BallIsTaken = true; 
-                    }
-                    else if (_tempBatProps.TakingDifficulty == eTaking.Medium)
-                    {
-                        if (Probability.GetTrueOrFalse("80"))
-                            _finalBatProps.BallIsTaken = true;
+                        whatHappend = eBatResult.BallIsReturned;
                     }
                     else
-                    {
-                        if (Probability.GetTrueOrFalse("95"))
-                            _finalBatProps.BallIsTaken = true;
-                    }
-
-                    if (_finalBatProps.BallIsTaken)
-                    {
-                        if (_batBeginning == eBatBeginning.FirstService ||
-                            _batBeginning == eBatBeginning.SecondService)
-                        {
-                            whatHappend = eBatEnding.BallIsReturned;
-                        }
-                        else
-                            whatHappend = eBatEnding.BallIsTaken;
-                    }
-                    else
-                        whatHappend = eBatEnding.BallIsNotTaken;
+                        whatHappend = eBatResult.BallIsTaken;
                 }
-                if (CheckIfBallIsOut())
+                else if (_finalBatProps.BallWillLandOut)
                 {
-                    whatHappend = eBatEnding.BallIsOut;
-                    return;
+                    whatHappend = eBatResult.BallIsOut;
+                }
+                else
+                {
+                    if (_batBeginning == eBatType.FirstService ||
+                        _batBeginning == eBatType.SecondService)
+                    {
+                        whatHappend = eBatResult.Ace;
+                    }
+                    else
+                        whatHappend = eBatResult.BallIsNotTaken;
                 }
             }
+        }
+
+        private void CalcBatProbs()
+        {
+            CalcBatDisturb();
+            CalcFirstLanding();
+            CalcSecondLanding();
+            CalcIfBallIsOut();
+            CalcIfBallIsBroken();
+            CalcIfBallIsTaken();
+
+            _finalBatProps = _tempBatProps;
+        }
+
+        private void CalcFirstLanding()
+        {
+            _tempBatProps.TimeTillFirstTarget = CalcTimeTillTarget(_tempBatProps.vBatPos
+                                                                 , _tempBatProps.vFirstLandingPos
+                                                                 , _tempBatProps.SpeedTillFirstLanding_KmH
+                                                                 );
         }
 
         private void SetPlayersToServicePositions()
@@ -149,8 +149,31 @@ namespace MexicanTennisSimulator.Classes
             _playerWithoutBat.MoveToTargetPos(0);
         }
 
-        private bool CheckIfTryToTakeBall()
+        private void RotateVirtualFieldForNextBat()
         {
+            var elements = new CourtElement[3];
+            elements[0] = _gameBall;
+            elements[1] = _playerWithBat;
+            elements[2] = _playerWithoutBat;
+
+            foreach (var item in elements)
+            {
+                var target = new Point();
+                target.X = -item.VActPos.X;
+                target.Y = -item.VActPos.Y;
+                item.VTargetPos = target;
+                item.MoveToTargetPos(0);
+            }
+        }
+
+        private void CalcIfBallIsTaken()
+        {
+            if (_tempBatProps.BallSeeableOut == eBallSeeableOut.ClearlyVisibleOut)
+            {
+                _tempBatProps.BallIsTaken = false;
+                return;
+            }
+
             Point ballTakePos = new Point();
             double timeTallTakePos_Ball = 0;
             double timeTillTakePos_PlayerWithoutBat = 0;
@@ -171,7 +194,7 @@ namespace MexicanTennisSimulator.Classes
             timeTillTakePos_PlayerWithoutBat = CalcTimeTillTarget(_playerWithoutBat.VActPos, ballTakePos, Player.MaxGlobalMovementSpeed_KmH);
             if (_tempBatProps.Bat == eBats.Smash || _tempBatProps.Bat == eBats.Volley)
             {
-                timeTallTakePos_Ball = _tempBatProps.TimeTillFirstTarget + CalcTimeTillTarget(_tempBatProps.vFirstLandingPos, ballTakePos, _tempBatProps.SpeedTillSecondLanding_KmH);
+                timeTallTakePos_Ball = _tempBatProps.TimeTillFirstTarget + CalcTimeTillTarget(_tempBatProps.vFirstLandingPos, ballTakePos, _tempBatProps.SpeedFromFirstTillSecondLanding_KmH);
             }
             else
 	            timeTallTakePos_Ball = CalcTimeTillTarget(_tempBatProps.vBatPos, ballTakePos, _tempBatProps.SpeedTillFirstLanding_KmH); 
@@ -190,15 +213,40 @@ namespace MexicanTennisSimulator.Classes
                 else
                     _tempBatProps.TakingDifficulty = eTaking.Easy;
 
-                _tempBatProps.BallIsTaken = true;
-                _tempBatProps.vTakePos = ballTakePos;
-                return true;
+                if (_tempBatProps.BallSeeableOut == eBallSeeableOut.MaybeOut)
+                {
+                    if (_tempBatProps.TakingDifficulty == eTaking.Hard)
+                    {
+                        _tempBatProps.BallIsTaken = Probability.GetTrueOrFalse("30"); //todo: Wahrscheinlichkeit abhängig vom Spieler
+                    }
+                    else if (_tempBatProps.TakingDifficulty == eTaking.Medium)
+                    {
+                        _tempBatProps.BallIsTaken = Probability.GetTrueOrFalse("70");
+                    }
+                    else if (_tempBatProps.TakingDifficulty == eTaking.Easy)
+                    {
+                        if (_tempBatProps.BallWillLandOut)
+                        {
+                            _tempBatProps.BallIsTaken = false;
+                            return;
+                        }
+                        else
+                            _tempBatProps.BallIsTaken = true;
+                    }
+                }
+                else
+                    _tempBatProps.BallIsTaken = true;
+
+                if (_tempBatProps.BallIsTaken)
+                {
+                    _tempBatProps.vTakePos = ballTakePos;
+                }
             }
             else
-                return false;
+                _tempBatProps.BallIsTaken = false;
         }
 
-        private void DisturbBat() //todo: Schlag stören
+        private void CalcBatDisturb() //todo: Schlag stören
         {
         }
 
@@ -217,12 +265,12 @@ namespace MexicanTennisSimulator.Classes
             if (_tempBatProps.Bat == eBats.Service || _tempBatProps.Bat == eBats.Smash)
             {
                 _tempBatProps.vSecondLandingPos = new Point(9999, -9999);
-                _tempBatProps.SpeedTillSecondLanding_KmH = _tempBatProps.SpeedTillFirstLanding_KmH;
+                _tempBatProps.SpeedFromFirstTillSecondLanding_KmH = _tempBatProps.SpeedTillFirstLanding_KmH;
             }
             else
             {
-                double distanceX = Math.Abs(_tempBatProps.vFirstLandingPos.X - _tempBatProps.vBatPos.X);
-                double distanceY = Math.Abs(_tempBatProps.vFirstLandingPos.Y - _tempBatProps.vBatPos.Y);
+                double distanceX = _tempBatProps.vFirstLandingPos.X - _tempBatProps.vBatPos.X;
+                double distanceY = _tempBatProps.vFirstLandingPos.Y - _tempBatProps.vBatPos.Y;
 
                 distanceX /= 3;
                 distanceY /= 3;
@@ -231,29 +279,75 @@ namespace MexicanTennisSimulator.Classes
                 double SecondLandingY = _tempBatProps.vFirstLandingPos.Y + distanceY;
 
                 _tempBatProps.vSecondLandingPos = new Point(SecondLandingX, SecondLandingY);
-                _tempBatProps.SpeedTillSecondLanding_KmH = _tempBatProps.SpeedTillSecondLanding_KmH / 2;
+                _tempBatProps.SpeedFromFirstTillSecondLanding_KmH = _tempBatProps.SpeedTillFirstLanding_KmH / 2;
             }
+
+            _tempBatProps.TimeFromFirstTillSecondTarget = CalcTimeTillTarget(_tempBatProps.vFirstLandingPos
+                                                                     , _tempBatProps.vSecondLandingPos
+                                                                     , _tempBatProps.SpeedFromFirstTillSecondLanding_KmH
+                                                                     );
         }
 
-        private bool CheckIfBallIsBroken()
+        private void CalcIfBallIsBroken()
         {
             double probability = _tempBatProps.SpeedTillFirstLanding_KmH / 80;
-            return Probability.GetTrueOrFalse(probability.ToString());
+            _tempBatProps.BallIsBroken = Probability.GetTrueOrFalse(probability.ToString());
         }
 
-        private bool CheckIfBallIsOut()
+        private void CalcIfBallIsOut()
         {
             var firstLandingPos = _tempBatProps.vFirstLandingPos;
             firstLandingPos.X = Math.Abs(firstLandingPos.X);
             firstLandingPos.Y = Math.Abs(firstLandingPos.Y);
-            if (firstLandingPos.X <= Match.BallServiceOutLeftX || 
-                firstLandingPos.X >= Match.BallServiceOutRightX ||
-                firstLandingPos.Y >= Match.BallServiceOutY)
+            if (_tempBatProps.Bat == eBats.Service)
             {
-                return true;
+                if (_tempBatProps.vFirstLandingPos.X <= Match.BallServiceOutLeftX ||
+                    _tempBatProps.vFirstLandingPos.X >= Match.BallServiceOutRightX ||
+                    _tempBatProps.vFirstLandingPos.Y <= Match.BallServiceOutY)
+                {
+                    _tempBatProps.BallWillLandOut = true;
+                }
+                else
+                    _tempBatProps.BallWillLandOut = false; 
             }
             else
-                return false;
+            {
+                double nearestDistance;
+                double tempNearestDistance1 = Math.Abs(_tempBatProps.vFirstLandingPos.Y - Match.BallOutY);
+                double tempNearestDistance2 = Math.Abs(_tempBatProps.vFirstLandingPos.X - Match.BallOutLeftX);
+                double tempNearestDistance3 = Math.Abs(_tempBatProps.vFirstLandingPos.X - Match.BallOutRightX);
+
+                if (_tempBatProps.vFirstLandingPos.X <= Match.BallOutLeftX ||
+                    _tempBatProps.vFirstLandingPos.X >= Match.BallOutRightX ||
+                    _tempBatProps.vFirstLandingPos.Y <= Match.BallOutY)
+                {
+                    _tempBatProps.BallWillLandOut = true;
+                    if (tempNearestDistance1 < tempNearestDistance2 &&
+                    tempNearestDistance1 < tempNearestDistance3)
+                    {
+                        nearestDistance = tempNearestDistance1;
+                    }
+                    else if (tempNearestDistance2 < tempNearestDistance3)
+                    {
+                        nearestDistance = tempNearestDistance2;
+                    }
+                    else
+                        nearestDistance = tempNearestDistance3;
+
+                    if (nearestDistance <= 5)
+                    {
+                        _tempBatProps.BallSeeableOut = eBallSeeableOut.CantSeeIfOut;
+                    }
+                    else if (nearestDistance <= 10)
+                    {
+                        _tempBatProps.BallSeeableOut = eBallSeeableOut.MaybeOut;
+                    }
+                    else
+                        _tempBatProps.BallSeeableOut = eBallSeeableOut.ClearlyVisibleOut;
+                }
+                else
+                    _tempBatProps.BallWillLandOut = false;
+            }
         }
     }
 }

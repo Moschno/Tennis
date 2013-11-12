@@ -15,8 +15,8 @@ namespace MexicanTennisSimulator.Classes
         public static readonly int BallOutLeftX = -BallOutRightX;
         public static readonly int BallServiceOutRightX = BallOutRightX;
         public static readonly int BallServiceOutLeftX = 0 - Ball.BallDiameter / 2;
-        public static readonly int BallOutY = vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
-        public static readonly int BallServiceOutY = vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
+        public static readonly int BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
+        public static readonly int BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
 
         private Player _playerOne;
         private Player _playerTwo;

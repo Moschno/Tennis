@@ -55,71 +55,71 @@ namespace MexicanTennisSimulator.Classes
             {
                 _rallyRunning = true;
 
-                _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.FirstService);
                 StartAndSaveBat();
 
-                if (_bat.WhatHappend == eBatEnding.Let)
+                if (_bat.WhatHappend == eBatResult.Let)
                 {
                     do
                     {
-                        _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.FirstService);
+                        _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.FirstService);
                         StartAndSaveBat(); 
-                    } while (_bat.WhatHappend == eBatEnding.Let);
+                    } while (_bat.WhatHappend == eBatResult.Let);
                 }
-                else if (_bat.WhatHappend == eBatEnding.BallIsOut)
+                else if (_bat.WhatHappend == eBatResult.BallIsOut)
                 {
-                    _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
+                    _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.SecondService);
                     StartAndSaveBat();
 
-                    if (_bat.WhatHappend == eBatEnding.Let)
+                    if (_bat.WhatHappend == eBatResult.Let)
                     {
                         do
                         {
-                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.SecondService);
+                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.SecondService);
                             StartAndSaveBat();
-                        } while (_bat.WhatHappend == eBatEnding.Let);
+                        } while (_bat.WhatHappend == eBatResult.Let);
                     }
                 }
 
-                if (_bat.WhatHappend == eBatEnding.BallIsReturned)
+                if (_bat.WhatHappend == eBatResult.BallIsReturned)
                 {
-                    _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Return);
+                    _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatType.Return);
                     StartAndSaveBat();
-                    if (_bat.WhatHappend == eBatEnding.BallIsNotTaken)
+                    if (_bat.WhatHappend == eBatResult.BallIsNotTaken)
                     {
                         winner = eCourtElements.PlayerWithoutService;
                         return;
                     }
                 }
 
-                if (_bat.WhatHappend == eBatEnding.Ace ||
-                    _bat.WhatHappend == eBatEnding.BallIsNotTaken ||
-                    _bat.WhatHappend == eBatEnding.BallIsOut)
+                if (_bat.WhatHappend == eBatResult.Ace ||
+                    _bat.WhatHappend == eBatResult.BallIsNotTaken ||
+                    _bat.WhatHappend == eBatResult.BallIsOut)
                 {
                     winner = eCourtElements.PlayerWithService;
                     return;
                 }
 
                 bool servicePlayerHasToBatBall = true;
-                if (_bat.WhatHappend != eBatEnding.BallIsBroken)
+                if (_bat.WhatHappend != eBatResult.BallIsBroken)
                 {
                     do
                     {
                         if (servicePlayerHasToBatBall)
                         {
-                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatBeginning.Bat);
+                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.Bat);
                             servicePlayerHasToBatBall = false;
                         }
                         else
                         {
-                            _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatBeginning.Bat);
+                            _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatType.Bat);
                             servicePlayerHasToBatBall = true;
                         }
                         StartAndSaveBat();
-                    } while (_bat.WhatHappend == eBatEnding.BallIsTaken); 
+                    } while (_bat.WhatHappend == eBatResult.BallIsTaken); 
                 }
 
-                if (_bat.WhatHappend == eBatEnding.BallIsBroken)
+                if (_bat.WhatHappend == eBatResult.BallIsBroken)
                 {
                     _rallyRunning = false;
                     StartRally();

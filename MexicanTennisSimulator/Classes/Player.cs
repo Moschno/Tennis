@@ -57,12 +57,12 @@ namespace MexicanTennisSimulator.Classes
 
         public sBatProps DoBat()
         {
-            return BatBall(100, -180, eBats.Default);
+            return BatBall(100, -180, eBats.NotSet);
         }
 
         public sBatProps DoReturn()
         {
-            return BatBall(100, -180, eBats.Default);
+            return BatBall(100, -180, eBats.Return);
         }
 
         public void RunToBatPosition()
