@@ -9,14 +9,14 @@ namespace MexicanTennisSimulator.Classes
     class Match
     {
         public static double BallSlowDownFactor = 3;
-        public static int vCourtWidth = 720;
-        public static int vCourtHeight = 1560;
-        public static readonly int BallOutRightX = vCourtWidth / 2 / 36 * 135 / 10 + Ball.BallDiameter / 2;
-        public static readonly int BallOutLeftX = -BallOutRightX;
-        public static readonly int BallServiceOutRightX = BallOutRightX;
-        public static readonly int BallServiceOutLeftX = 0 - Ball.BallDiameter / 2;
-        public static readonly int BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
-        public static readonly int BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
+        public static double vCourtWidth = 720;
+        public static double vCourtHeight = 1560;
+        public static readonly double BallOutRightX = vCourtWidth / 2 / 36 * 135 / 10 + Ball.BallDiameter / 2;
+        public static readonly double BallOutLeftX = -BallOutRightX;
+        public static readonly double BallServiceOutRightX = BallOutRightX;
+        public static readonly double BallServiceOutLeftX = 0 - Ball.BallDiameter / 2;
+        public static readonly double BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
+        public static readonly double BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
 
         private Player _playerOne;
         private Player _playerTwo;

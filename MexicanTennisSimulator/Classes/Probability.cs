@@ -9,9 +9,9 @@ namespace MexicanTennisSimulator.Classes
 {
     static class Probability
     {
-        public static bool GetTrueOrFalse(string getTrueProbability, bool recursion = false)
+        public static bool RollByFactor(string trueProbability, bool recursion = false)
         {
-            double getTrueProbabilityDouble = Convert.ToDouble(getTrueProbability);
+            double getTrueProbabilityDouble = Convert.ToDouble(trueProbability);
             int getTrueProbabilityInt = (int)getTrueProbabilityDouble;
 
             if (!recursion)
@@ -20,18 +20,18 @@ namespace MexicanTennisSimulator.Classes
                 if (getTrueProbabilityDouble < 0 || getTrueProbabilityDouble > 100)
                     throw new ArgumentOutOfRangeException("trueProbabiliy", "Der Wert von 'trueProbabiliy' muss zwischen 0 und 100 liegen.");
 
-                int indexPoint = getTrueProbability.IndexOf(",");
+                int indexPoint = trueProbability.IndexOf(",");
                 if (indexPoint == -1)
-                    indexPoint = getTrueProbability.IndexOf(".");
+                    indexPoint = trueProbability.IndexOf(".");
                 if (indexPoint != -1)
                 {
-                    string stringDecimalPlaces = getTrueProbability.Substring(indexPoint + 1);
+                    string stringDecimalPlaces = trueProbability.Substring(indexPoint + 1);
                     int countDecimalPlaces = stringDecimalPlaces.Length;
                     for (int i = countDecimalPlaces - 1; i >= 0; i--)
                     {
                         innerTrueProbability += Convert.ToInt32(stringDecimalPlaces.Substring(i, 1));
                         innerTrueProbability += innerTrueProbability * 9;
-                        if (GetTrueOrFalse(innerTrueProbability.ToString(), true))
+                        if (RollByFactor(innerTrueProbability.ToString(), true))
                             innerTrueProbability = 1;
                         else
                             innerTrueProbability = 0;

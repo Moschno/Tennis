@@ -75,10 +75,10 @@ namespace MexicanTennisSimulator.Classes
             var vTargetPosBall = new Point(vTargetPosX, vTargetPosY);
 
             sBatProps batProbs = new sBatProps();
-            batProbs.SpeedTillFirstLanding_KmH = batSpeed_ms;
-            batProbs.vFirstLandingPos = vTargetPosBall;
-            batProbs.vBatPos = VActPos;
-            batProbs.Bat = bat;
+            batProbs.BallSpeedTillFirstLanding_KmH = batSpeed_ms;
+            batProbs.vBallFirstLandingPos = vTargetPosBall;
+            batProbs.vBatPlayerBatPos = VActPos;
+            batProbs.BatPlayerBat = bat;
 
             return batProbs;
         }

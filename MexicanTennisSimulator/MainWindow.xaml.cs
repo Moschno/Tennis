@@ -53,7 +53,7 @@ namespace MexicanTennisSimulator
             {
                 txtEnding += item.WhatHappend.ToString() + nL;
                 txtBeginning += item.BatBeginning.ToString() + nL;
-                txtBat += item.FinalBatProps.Bat.ToString() + nL;
+                txtBat += item.FinalBatProps.BatPlayerBat.ToString() + nL;
                 if (item.PlayerWithBat.Equals(_playerOne))
                     txtPlayer += eCourtElements.PlayerOne.ToString() + nL;
                 else

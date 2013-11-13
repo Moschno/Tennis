@@ -10,17 +10,19 @@ namespace MexicanTennisSimulator
     public struct sRally { public eCourtElements FirstService; public eCourtElements SecondService; public eCourtElements UpperSide; };
     public struct sElement { public eCourtElements Element; };
     public struct sPlayer { public eCourtElements Player; };
-    public struct sBatProps { public eBats Bat
-                            ; public Point vBatPos
-                            ; public Point vFirstLandingPos
-                            ; public Point vSecondLandingPos
-                            ; public Point vTakePos
-                            ; public double SpeedTillFirstLanding_KmH
-                            ; public double SpeedFromFirstTillSecondLanding_KmH
-                            ; public double TimeTillFirstTarget
-                            ; public double TimeFromFirstTillSecondTarget
+    public struct sBatProps { public eBats BatPlayerBat
+                            ; public Point vBatPlayerBatPos
+                            ; public Point vBat
+                            ; public Point vBallFirstLandingPos
+                            ; public Point vBallSecondLandingPos
+                            ; public Point vTakePlayerTakePos
+                            ; public double BallSpeedTillFirstLanding_KmH
+                            ; public double BallSpeedFromFirstTillSecondLanding_KmH
+                            ; public double BallTimeTillFirstTarget
+                            ; public double BallTimeFromFirstTillSecondTarget
+                            ; public double BallTimeTillTakePos
                             ; public bool BallIsTaken 
-                            ; public eTaking TakingDifficulty
+                            ; public eTaking BallTakingDifficulty
                             ; public bool BallIsBroken
                             ; public bool BallWillLandOut
                             ; public eBallSeeableOut BallSeeableOut;
