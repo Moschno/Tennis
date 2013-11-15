@@ -35,6 +35,7 @@ namespace MexicanTennisSimulator
             _playerTwo = new Player(4, 4, 4);
             _match = new Match(ref _playerOne, ref _playerTwo);
             _match.CreateTennisMatch();
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -42,32 +43,38 @@ namespace MexicanTennisSimulator
             var rally = new Rally(ref _playerOne, ref _playerTwo);
             rally.RallyFinished += rally_RallyFinished;
             rally.StartRally();
-        }
 
-        void rally_RallyFinished(object sender, FinishedEventArgs e)
-        {
             var nL = Environment.NewLine;
-            var rally = (Rally)sender;
             string txtPlayer = "", txtEnding = "", txtBeginning = "", txtBat = "";
             foreach (var item in rally.Bats)
             {
                 txtEnding += item.WhatHappend.ToString() + nL;
-                txtBeginning += item.BatBeginning.ToString() + nL;
+                txtBeginning += item.FinalBatProps.BatType.ToString() + nL;
                 txtBat += item.FinalBatProps.BatPlayerBat.ToString() + nL;
                 if (item.PlayerWithBat.Equals(_playerOne))
                     txtPlayer += eCourtElements.PlayerOne.ToString() + nL;
                 else
-                    txtPlayer += eCourtElements.PlayerTwo.ToString() + nL;    
+                    txtPlayer += eCourtElements.PlayerTwo.ToString() + nL;
             }
 
             tbPlayer.Text = txtPlayer;
             tbBeginning.Text = txtBeginning;
             tbEnding.Text = txtEnding;
             tbBat.Text = txtBat;
-            if (rally.Winner.Equals(_playerOne))
-                tbWinner.Text = eCourtElements.PlayerOne.ToString();
-            else
-                tbWinner.Text = eCourtElements.PlayerTwo.ToString();
+            if (rally.Winner == eCourtElements.PlayerWithService)
+            {
+                if (rally.Bats[rally.Bats.Count - 1].PlayerWithBat.Equals(_playerOne))
+                {
+                    tbWinner.Text = eCourtElements.PlayerOne.ToString();
+                }
+                else
+                    tbWinner.Text = eCourtElements.PlayerTwo.ToString();
+            }
+        }
+
+        void rally_RallyFinished(object sender, FinishedEventArgs e)
+        {
+            
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

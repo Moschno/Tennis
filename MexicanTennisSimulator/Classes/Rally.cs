@@ -24,21 +24,15 @@ namespace MexicanTennisSimulator.Classes
             get { return _bats; }
         }
 
-        private eCourtElements winner
-        {
-            get { return _winner; }
-            set
-            {
-                _winner = value;
-                _rallyRunning = false;
-                _rallyFinished = true;
-                RallyFinished(this, new FinishedEventArgs(value));
-            }
-        }
-
         public eCourtElements Winner
         {
             get { return _winner; }
+            private set
+            {
+                _winner = value;
+                _rallyFinished = true;
+                _rallyRunning = false;
+            }
         }
 
         public Rally(ref Player playerWithService, ref Player playerWithoutService)
@@ -47,6 +41,12 @@ namespace MexicanTennisSimulator.Classes
             _playerWithoutService = playerWithoutService;
             _gameBall = new Ball();
             _bats = new List<Bat>();
+
+            //todo: Kommt später in die Klasse "Match"
+            _playerWithService.MatchOpponent = playerWithoutService;
+            _playerWithService.Gameball = _gameBall;
+            _playerWithoutService.MatchOpponent = playerWithService;
+            _playerWithoutService.Gameball = _gameBall;
         }
 
         public void StartRally()
@@ -87,7 +87,7 @@ namespace MexicanTennisSimulator.Classes
                     StartAndSaveBat();
                     if (_bat.WhatHappend == eBatResult.BallIsNotTaken)
                     {
-                        winner = eCourtElements.PlayerWithoutService;
+                        Winner = eCourtElements.PlayerWithoutService;
                         return;
                     }
                 }
@@ -96,7 +96,7 @@ namespace MexicanTennisSimulator.Classes
                     _bat.WhatHappend == eBatResult.BallIsNotTaken ||
                     _bat.WhatHappend == eBatResult.BallIsOut)
                 {
-                    winner = eCourtElements.PlayerWithService;
+                    Winner = eCourtElements.PlayerWithService;
                     return;
                 }
 
@@ -128,12 +128,12 @@ namespace MexicanTennisSimulator.Classes
 
                 if (servicePlayerHasToBatBall)
                 {
-                    winner = eCourtElements.PlayerWithService;
+                    Winner = eCourtElements.PlayerWithoutService;
                 }
                 else
                 {
-                    winner = eCourtElements.PlayerWithoutService;
-                } 
+                    Winner = eCourtElements.PlayerWithService;
+                }
             }
         }
 

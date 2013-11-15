@@ -15,85 +15,85 @@ namespace MexicanTennisSimulator.Classes
     {
         public static readonly double MinGlobalBatSpeed_KmH = 70;
         public static readonly double MaxGlobalBatSpeed_KmH = 130;
-        public static readonly double MaxGlobalMovementSpeed_KmH = 20;
-        public static readonly Point ServiceWithBatPos = new Point(-50, 400);
-        public static readonly Point ServiceWithoutBatPos = new Point(100, -400);
-        private int _strength;
-        private int _velocity;
-        private int _precision;
-        private sBatProps _batProbs;
-        private Player _matchOpponent;
-        private Ball _gameball;
+        public static readonly double MinGlobalServiceSpeed_KmH = 160;
+        public static readonly double MaxGlobalServiceSpeed_KmH = 220;
+        public static readonly double MinGlobalMovementSpeed_KmH = 18;
+        public static readonly double MaxGlobalMovementSpeed_KmH = 23;
+        public static readonly Point ServiceBatPos = new Point(-50, 400);
+        public static readonly Point ServiceTakePos = new Point(100, -400);
+        public int Strength;
+        public int Velocity;
+        public int Precision;
+        public int Service;
+        private sBatProps _tempBatProps;
+        public Player MatchOpponent;
+        public Ball Gameball;
 
         public sBatProps BatProbs
         {
-            get { return _batProbs; }
+            get { return _tempBatProps; }
         }
 
         public Player(int strength, int velocity, int precision) 
             : base()
         {
-            _strength = strength;
-            _velocity = velocity;
-            _precision = precision;
+            Strength = strength;
+            Velocity = velocity;
+            Precision = precision;
         }
 
-        public sBatProps DoFirstService()
+        public sBatProps DoBat(sBatProps batProps)
         {
-            int strength = _strength;
-            return BatBall(90, -190, eBats.Service);
+            _tempBatProps = batProps;
+            CalcBallTargetPos();
+            CalcBallSpeed();
+
+            return _tempBatProps;
         }
 
-        public sBatProps DoSecondService()
+        private void CalcBallTargetPos()
         {
-            int strength;
-            if (_strength > 3)
-                strength = 3;
+            Point opponentPos = MatchOpponent.VActPos;
+            int negateFactor;
+            if (opponentPos.X < 0)
+                negateFactor = 1;
             else
-                strength = _strength;
+                negateFactor = -1;
 
-            return BatBall(100, -180, eBats.Service);
+            if (_tempBatProps.BatType == eBatType.FirstService ||
+                _tempBatProps.BatType == eBatType.SecondService)
+            {
+                _tempBatProps.BatPlayerBat = eBats.Service;
+                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - 10), Match.BallServiceOutY - 10);
+            }
+            else if (_tempBatProps.BatType == eBatType.Return)
+            {
+                _tempBatProps.BatPlayerBat = eBats.Return;
+                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - 80) * negateFactor, Match.BallOutY + 50);
+            }
+            else if (_tempBatProps.BatType == eBatType.Bat)
+            {
+                _tempBatProps.BatPlayerBat = eBats.Bat;
+                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - 80) * negateFactor, Match.BallOutY + 10); 
+            }
         }
 
-        public sBatProps DoBat()
+        private void CalcBallSpeed()
         {
-            return BatBall(100, -180, eBats.NotSet);
-        }
-
-        public sBatProps DoReturn()
-        {
-            return BatBall(100, -180, eBats.Return);
-        }
-
-        public void RunToBatPosition()
-        {
-        }
-
-        private sBatProps BatBall(double vTargetPosX, double vTargetPosY, eBats bat)
-        {
-            double batSpeed_ms = ConvertStrengthToSpeed_ms(_strength);
-            var vTargetPosBall = new Point(vTargetPosX, vTargetPosY);
-
-            sBatProps batProbs = new sBatProps();
-            batProbs.BallSpeedTillFirstLanding_KmH = batSpeed_ms;
-            batProbs.vBallFirstLandingPos = vTargetPosBall;
-            batProbs.vBatPlayerBatPos = VActPos;
-            batProbs.BatPlayerBat = bat;
-
-            return batProbs;
+            _tempBatProps.BallSpeedFromBattingPlayer = ConvertStrengthToSpeed_ms(Strength);
         }
 
         private Point CalcBallBatPoint()
         {
-            double distanceTillFirstLandingX = _gameball.VTargetPos.X - _gameball.VActPos.X;
-            double distanceTillFirstLandingY = _gameball.VTargetPos.Y - _gameball.VActPos.Y;
+            double distanceTillFirstLandingX = Gameball.VTargetPos.X - Gameball.VActPos.X;
+            double distanceTillFirstLandingY = Gameball.VTargetPos.Y - Gameball.VActPos.Y;
 
             double distanceFromFirstBatPosX = distanceTillFirstLandingX + distanceTillFirstLandingX / Match.BallSlowDownFactor / 2;
             double distanceFromFirstBatPosY = distanceTillFirstLandingY + distanceTillFirstLandingY / Match.BallSlowDownFactor / 2;
 
             var ballBatPoint = new Point();
-            ballBatPoint.X = _gameball.VActPos.X + distanceFromFirstBatPosX;
-            ballBatPoint.Y = _gameball.VActPos.Y + distanceFromFirstBatPosY;
+            ballBatPoint.X = Gameball.VActPos.X + distanceFromFirstBatPosX;
+            ballBatPoint.Y = Gameball.VActPos.Y + distanceFromFirstBatPosY;
 
             return ballBatPoint;
         }

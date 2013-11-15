@@ -15,7 +15,7 @@ namespace MexicanTennisSimulator.Classes
 {
     sealed class Ball : CourtElement
     {
-        public static readonly int BallDiameter = 10;
+        public const int BallDiameter = 10;
         private Point _firstLandingPos;
         private Player _lastBatPlayer;
 
