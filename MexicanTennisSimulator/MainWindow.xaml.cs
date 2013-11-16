@@ -31,8 +31,8 @@ namespace MexicanTennisSimulator
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            _playerOne = new Player(8, 8, 8);
-            _playerTwo = new Player(4, 4, 4);
+            _playerOne = new Player(8, 8, 8, 8, 8);
+            _playerTwo = new Player(4, 4, 4, 4, 4);
             _match = new Match(ref _playerOne, ref _playerTwo);
             _match.CreateTennisMatch();
 
@@ -63,13 +63,10 @@ namespace MexicanTennisSimulator
             tbBat.Text = txtBat;
             if (rally.Winner == eCourtElements.PlayerWithService)
             {
-                if (rally.Bats[rally.Bats.Count - 1].PlayerWithBat.Equals(_playerOne))
-                {
-                    tbWinner.Text = eCourtElements.PlayerOne.ToString();
-                }
-                else
-                    tbWinner.Text = eCourtElements.PlayerTwo.ToString();
+                tbWinner.Text = eCourtElements.PlayerOne.ToString();
             }
+            else
+                tbWinner.Text = eCourtElements.PlayerTwo.ToString();
         }
 
         void rally_RallyFinished(object sender, FinishedEventArgs e)

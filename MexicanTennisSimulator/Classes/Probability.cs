@@ -47,21 +47,51 @@ namespace MexicanTennisSimulator.Classes
                 return false;
         }
 
-        public static int GetBetterRandomNumber(int exclMax)
+        public static int GetBetterRandomNumber(int exclMax, bool inclZero = true)
         {
-            RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
-            byte[] randomNumber = new byte[4];
-            c.GetBytes(randomNumber);
-            int result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+            int result = 0;
+            if (inclZero == true)
+            {
+                RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
+                byte[] randomNumber = new byte[4];
+                c.GetBytes(randomNumber);
+                result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+            }
+            else
+            {
+                do
+                {
+                    RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
+                    byte[] randomNumber = new byte[4];
+                    c.GetBytes(randomNumber);
+                    result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+                } while (result % exclMax == 0); 
+            }
+
             return result % exclMax;
         }
 
-        public static int GetBetterRandomNumber(int inclMin, int exclMax)
+        public static int GetBetterRandomNumber(int inclMin, int exclMax, bool inclZero = true)
         {
-            RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
-            byte[] randomNumber = new byte[4];
-            c.GetBytes(randomNumber);
-            int result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+            int result = 0;
+            if (inclZero == true)
+            {
+                RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
+                byte[] randomNumber = new byte[4];
+                c.GetBytes(randomNumber);
+                result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+            }
+            else
+            {
+                do
+                {
+                    RNGCryptoServiceProvider c = new RNGCryptoServiceProvider();
+                    byte[] randomNumber = new byte[4];
+                    c.GetBytes(randomNumber);
+                    result = Math.Abs(BitConverter.ToInt32(randomNumber, 0));
+                } while (result % exclMax + inclMin == 0);
+            }
+
             return result % exclMax + inclMin;
         }
     }

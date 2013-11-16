@@ -45,7 +45,7 @@ namespace MexicanTennisSimulator.Classes
                     //_rallys.Add(rallyTennis);
                     //rallyTennis.StartRally();
 
-                    if (true) //todo: Sieger steht fest.
+                    if (true) //Sieger steht fest
                     {
                         _setRunning = false;
                     }

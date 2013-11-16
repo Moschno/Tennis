@@ -131,7 +131,7 @@ namespace MexicanTennisSimulator.Classes
                 var vOptimalRepositioningPos = new Point(repoPosX, repoPosY);
 
                 double disposalTimeForRepositioning = _tempBatProps.BallTimeTillTakePos;
-                double requiredTimeForRepositioning = CalcTimeTillTarget(_tempBatProps.vBatPlayerBatPos, vOptimalRepositioningPos, Player.MaxGlobalMovementSpeed_KmH);
+                double requiredTimeForRepositioning = CalcTimeTillTarget(_tempBatProps.vBatPlayerBatPos, vOptimalRepositioningPos, _playerBat.GetAveragePlayerSpeed_KmH());
 
                 Point vTargetPos;
                 if (requiredTimeForRepositioning > disposalTimeForRepositioning)
@@ -145,7 +145,7 @@ namespace MexicanTennisSimulator.Classes
                     vTargetPos = vOptimalRepositioningPos;
 
                 _playerBat.VTargetPos = vTargetPos;
-                _playerBat.MoveToTargetPos(Player.MaxGlobalMovementSpeed_KmH); //todo: Speed abhängig von Spieler-Velocity
+                _playerBat.MoveToTargetPos(); 
             }
         }
 
@@ -181,6 +181,14 @@ namespace MexicanTennisSimulator.Classes
                 _tempBatProps.BallIsTaken = false;
                 return;
             }
+            else if (_tempBatProps.BatPlayerBat == eBats.Service)
+            {
+                if (_tempBatProps.BallWillLandOut)
+                {
+                    _tempBatProps.BallIsTaken = false;
+                    return;
+                }
+            }
 
             Point ballTakePos = new Point();
             double ratio = (_tempBatProps.vBatPlayerBatPos.X * _tempBatProps.vBallFirstLandingPos.Y) / (_tempBatProps.vBatPlayerBatPos.Y * _tempBatProps.vBallFirstLandingPos.X);
@@ -206,6 +214,13 @@ namespace MexicanTennisSimulator.Classes
 	            _tempBatProps.BallTimeTillTakePos = CalcTimeTillTarget(_tempBatProps.vBatPlayerBatPos, ballTakePos, _tempBatProps.BallSpeedTillFirstLanding_KmH);
 
             double timeDifference = _tempBatProps.BallTimeTillTakePos - _tempBatProps.TakePlayerTimeTillTakePos;
+            if (_tempBatProps.BatPlayerBat == eBats.Service)
+            {
+                int random = Probability.GetBetterRandomNumber(_playerTake.Retörn + 10);
+                int number = (int)((double)random / 2D + 0.5);
+                double returnFactor = (double)number / 10D;
+                timeDifference += returnFactor;
+            }
             if (timeDifference >= 0)
             {
                 if (timeDifference <= 0.1)
@@ -253,14 +268,14 @@ namespace MexicanTennisSimulator.Classes
 
             if (_tempBatProps.BallIsTaken)
             {
-                _playerTake.MoveToTargetPos(Player.MaxGlobalMovementSpeed_KmH); //todo: Speed abhängig von Spieler-Velocity
+                _playerTake.MoveToTargetPos();
             }
         }
 
         private void CalcBatDisturb() //todo: Schlag stören
         {
             _tempBatProps.vBallFirstLandingPos = _tempBatProps.vBallTargetPosFromBattingPlayer;
-            _tempBatProps.BallSpeedTillFirstLanding_KmH = _tempBatProps.BallSpeedFromBattingPlayer;
+            _tempBatProps.BallSpeedTillFirstLanding_KmH = _tempBatProps.BallSpeedBat;
         }
 
         public static double CalcTimeTillTarget(Point startPos, Point targetPos, double speed_KmH)

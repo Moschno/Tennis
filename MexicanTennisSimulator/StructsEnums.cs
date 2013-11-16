@@ -19,7 +19,7 @@ namespace MexicanTennisSimulator
                             ; public Point vBallFirstLandingPos
                             ; public Point vBallSecondLandingPos
                             ; public Point vTakePlayerTakePos
-                            ; public double BallSpeedFromBattingPlayer
+                            ; public double BallSpeedBat
                             ; public double BallSpeedTillFirstLanding_KmH
                             ; public double BallSpeedFromFirstTillSecondLanding_KmH
                             ; public double BallTimeTillFirstTarget

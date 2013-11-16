@@ -55,30 +55,31 @@ namespace MexicanTennisSimulator.Classes
             {
                 _rallyRunning = true;
 
-                _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.FirstService);
-                StartAndSaveBat();
+                do
+                {
+                    _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.FirstService);
+                    StartAndSaveBat(); 
+                } while (_bat.WhatHappend == eBatResult.Let);
 
-                if (_bat.WhatHappend == eBatResult.Let)
+                if (_bat.WhatHappend == eBatResult.BallIsOut)
                 {
                     do
                     {
-                        _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.FirstService);
-                        StartAndSaveBat(); 
-                    } while (_bat.WhatHappend == eBatResult.Let);
+                        _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.SecondService);
+                        StartAndSaveBat();
+                    } while (_bat.WhatHappend == eBatResult.Let || _bat.WhatHappend == eBatResult.BallIsBroken);
+                }
+
+                if (_bat.WhatHappend == eBatResult.Ace ||
+                    _bat.WhatHappend == eBatResult.BallIsNotTaken)
+                {
+                    Winner = eCourtElements.PlayerWithService;
+                    return;
                 }
                 else if (_bat.WhatHappend == eBatResult.BallIsOut)
                 {
-                    _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.SecondService);
-                    StartAndSaveBat();
-
-                    if (_bat.WhatHappend == eBatResult.Let)
-                    {
-                        do
-                        {
-                            _bat = new Bat(ref _playerWithService, ref _playerWithoutService, ref _gameBall, eBatType.SecondService);
-                            StartAndSaveBat();
-                        } while (_bat.WhatHappend == eBatResult.Let);
-                    }
+                    Winner = eCourtElements.PlayerWithoutService;
+                    return;
                 }
 
                 if (_bat.WhatHappend == eBatResult.BallIsReturned)
@@ -90,14 +91,6 @@ namespace MexicanTennisSimulator.Classes
                         Winner = eCourtElements.PlayerWithoutService;
                         return;
                     }
-                }
-
-                if (_bat.WhatHappend == eBatResult.Ace ||
-                    _bat.WhatHappend == eBatResult.BallIsNotTaken ||
-                    _bat.WhatHappend == eBatResult.BallIsOut)
-                {
-                    Winner = eCourtElements.PlayerWithService;
-                    return;
                 }
 
                 bool servicePlayerHasToBatBall = true;
