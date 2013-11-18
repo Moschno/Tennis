@@ -39,8 +39,6 @@ namespace MexicanTennisSimulator.Classes
         {
             _playerWithService = playerWithService;
             _playerWithoutService = playerWithoutService;
-            _gameBall = new Ball();
-            _bats = new List<Bat>();
 
             //todo: Kommt später in die Klasse "Match"
             _playerWithService.MatchOpponent = playerWithoutService;
@@ -54,6 +52,8 @@ namespace MexicanTennisSimulator.Classes
             if (!_rallyRunning && !_rallyFinished)
             {
                 _rallyRunning = true;
+                _gameBall = new Ball();
+                _bats = new List<Bat>();
 
                 do
                 {
@@ -70,18 +70,6 @@ namespace MexicanTennisSimulator.Classes
                     } while (_bat.WhatHappend == eBatResult.Let || _bat.WhatHappend == eBatResult.BallIsBroken);
                 }
 
-                if (_bat.WhatHappend == eBatResult.Ace ||
-                    _bat.WhatHappend == eBatResult.BallIsNotTaken)
-                {
-                    Winner = eCourtElements.PlayerWithService;
-                    return;
-                }
-                else if (_bat.WhatHappend == eBatResult.BallIsOut)
-                {
-                    Winner = eCourtElements.PlayerWithoutService;
-                    return;
-                }
-
                 if (_bat.WhatHappend == eBatResult.BallIsReturned)
                 {
                     _bat = new Bat(ref _playerWithoutService, ref _playerWithService, ref _gameBall, eBatType.Return);
@@ -91,6 +79,14 @@ namespace MexicanTennisSimulator.Classes
                         Winner = eCourtElements.PlayerWithoutService;
                         return;
                     }
+                }
+
+                if (_bat.WhatHappend == eBatResult.Ace ||
+                    _bat.WhatHappend == eBatResult.BallIsNotTaken ||
+                    _bat.WhatHappend == eBatResult.BallIsOut)
+                {
+                    Winner = eCourtElements.PlayerWithService;
+                    return;
                 }
 
                 bool servicePlayerHasToBatBall = true;
@@ -121,11 +117,25 @@ namespace MexicanTennisSimulator.Classes
 
                 if (servicePlayerHasToBatBall)
                 {
-                    Winner = eCourtElements.PlayerWithoutService;
+                    if (_bat.WhatHappend == eBatResult.BallIsOut)
+                    {
+                        Winner = eCourtElements.PlayerWithService;
+                    }
+                    else
+                    {
+                        Winner = eCourtElements.PlayerWithoutService; 
+                    }
                 }
                 else
                 {
-                    Winner = eCourtElements.PlayerWithService;
+                    if (_bat.WhatHappend == eBatResult.BallIsOut)
+                    {
+                        Winner = eCourtElements.PlayerWithoutService;
+                    }
+                    else
+                    {
+                        Winner = eCourtElements.PlayerWithService;
+                    }
                 }
             }
         }

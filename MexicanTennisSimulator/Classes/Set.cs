@@ -8,48 +8,127 @@ namespace MexicanTennisSimulator.Classes
 {
     class Set
     {
-        private Player _playerOne;
-        private Player _playerTwo;
+        private Player _playerWithServiceInFirstGame;
+        private Player _playerWithoutServiceInFirstGame;
+        private Game _game;
+        private List<Game> _games;
+        private eCourtElements _winner;
         private bool _setRunning;
-        private int _numberGames;
-        private bool _tieBreak;
-        private List<Rally> _rallys;
+        private bool _setFinished;
+        private int _games4Win;
+        private int _gamesPlayerWithServiceInFirstGame = 0;
+        private int _gamesPlayerWithoutServiceInFirstGame = 0;
 
-        public bool TieBreak
+        public List<Game> Games
         {
-            get { return _tieBreak; }
-            set
+            get { return _games; }
+        }
+
+        public eCourtElements Winner
+        {
+            get { return _winner; }
+            private set 
+            { 
+                _winner = value;
+                _setFinished = true;
+            }
+        }
+
+        public int Games4Win
+        {
+            get { return _games4Win; }
+            set 
             {
-                if (!_setRunning)
+                if (_setRunning || _setFinished)
                 {
-                    _tieBreak = value;
+                    throw new Exception();
+                }
+                else
+                {
+                    _games4Win = value; 
                 }
             }
         }
 
-        public Set(ref Player playerOne, ref Player playerTwo)
+        public Set(ref Player playerWithServiceInFirstGame, ref Player playerWithoutServiceInFirstGame)
         {
-            _playerOne = playerOne;
-            _playerTwo = playerTwo;
+            _playerWithServiceInFirstGame = playerWithServiceInFirstGame;
+            _playerWithoutServiceInFirstGame = playerWithoutServiceInFirstGame;
+            _games4Win = 6;
         }
 
         public void StartSet()
         {
-            if (!_setRunning)
+            if (!_setRunning && !_setFinished)
             {
                 _setRunning = true;
-                _rallys = new List<Rally>();
+                _games = new List<Game>();
+
                 do
                 {
-                    //Rally rallyTennis = new Rally(ref _playerOne, ref _playerTwo);
-                    //_rallys.Add(rallyTennis);
-                    //rallyTennis.StartRally();
-
-                    if (true) //Sieger steht fest
+                    if (_games.Count % 2 == 0)
+	                {
+                        _game = new Game(ref _playerWithServiceInFirstGame, ref _playerWithoutServiceInFirstGame);
+	                }
+                    else
                     {
-                        _setRunning = false;
+                        _game = new Game(ref _playerWithoutServiceInFirstGame, ref _playerWithServiceInFirstGame);
                     }
-                } while (_setRunning);
+                    StartAndSaveGame();
+                    CalcSetWinner();
+                } while (!_setFinished);
+
+                _setRunning = false;
+            }
+        }
+
+        private void StartAndSaveGame()
+        {
+            _game.StartGame();
+            _games.Add(_game);
+        }
+
+        private void CalcSetWinner()
+        {
+            if (_game.Winner == eCourtElements.PlayerWithService)
+            {
+                if (_games.Count % 2 == 0)
+                {
+                    _gamesPlayerWithServiceInFirstGame += 1;
+                }
+                else
+                {
+                    _gamesPlayerWithoutServiceInFirstGame += 1;
+                }
+            }
+            else
+            {
+                if (_games.Count % 2 == 0)
+                {
+                    _gamesPlayerWithoutServiceInFirstGame += 1;
+                }
+                else
+                {
+                    _gamesPlayerWithServiceInFirstGame += 1;
+                }
+            }
+
+            if (_gamesPlayerWithServiceInFirstGame >= _games4Win ||
+                _gamesPlayerWithoutServiceInFirstGame >= _games4Win)
+            {
+                int difference = Math.Abs(_gamesPlayerWithServiceInFirstGame - _gamesPlayerWithoutServiceInFirstGame);
+
+                if (difference >= 2)
+                {
+                    if (_gamesPlayerWithServiceInFirstGame > _gamesPlayerWithoutServiceInFirstGame)
+                    {
+                        Winner = eCourtElements.PlayerWithServiceInFirstGame;
+                    }
+                    else
+                    {
+                        Winner = eCourtElements.PlayerWithoutServiceInFirstGame;
+                    }
+                }
             }
         }
     }

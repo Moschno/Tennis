@@ -39,6 +39,8 @@ namespace MexicanTennisSimulator
                                , PlayerWithoutService
                                , PlayerWithBat
                                , PlayerWithoutBat
+                               , PlayerWithServiceInFirstGame
+                               , PlayerWithoutServiceInFirstGame
                                , GameBall 
                                };
     public enum eBats { NotSet, Volley, Smash, Lob, Cross, Longline, Service, Return, Bat};
