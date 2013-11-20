@@ -8,8 +8,8 @@ namespace MexicanTennisSimulator.Classes
 {
     class Game
     {
-        private Player _playerWithService;
-        private Player _playerWithoutService;
+		private Player _playerWithService;
+		private Player _playerWithoutService;
         private Rally _rally;
         private List<Rally> _rallys;
         private eCourtElements _winner;
@@ -17,6 +17,22 @@ namespace MexicanTennisSimulator.Classes
         private bool _gameFinished;
         private int _pointsPlayerWithService = 0;
         private int _pointsPlayerWithoutService = 0;
+
+		public Player PlayerWithService
+		{
+			get
+			{
+				return _playerWithService;
+			}
+		}
+
+		public Player PlayerWithoutService
+		{
+			get
+			{
+				return _playerWithoutService;
+			}
+		}
 
         public List<Rally> Rallys
         {

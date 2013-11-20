@@ -8,8 +8,8 @@ namespace MexicanTennisSimulator.Classes
 {
     class Set
     {
-        private Player _playerWithServiceInFirstGame;
-        private Player _playerWithoutServiceInFirstGame;
+		private Player _playerWithServiceInFirstGame;
+		private Player _playerWithoutServiceInFirstGame;
         private Game _game;
         private List<Game> _games;
         private eCourtElements _winner;
@@ -18,6 +18,22 @@ namespace MexicanTennisSimulator.Classes
         private int _games4Win;
         private int _gamesPlayerWithServiceInFirstGame = 0;
         private int _gamesPlayerWithoutServiceInFirstGame = 0;
+
+		public Player PlayerWithServiceInFirstGame
+		{
+			get
+			{
+				return _playerWithServiceInFirstGame;
+			}
+		}
+
+		public Player PlayerWithoutServiceInFirstGame
+		{
+			get
+			{
+				return _playerWithoutServiceInFirstGame;
+			}
+		}
 
         public List<Game> Games
         {

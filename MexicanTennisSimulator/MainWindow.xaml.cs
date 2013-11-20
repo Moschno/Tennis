@@ -33,8 +33,6 @@ namespace MexicanTennisSimulator
         {
             _playerOne = new Player(5, 5, 5, 1, 5);
             _playerTwo = new Player(4, 4, 4, 4, 4);
-            _match = new Match(ref _playerOne, ref _playerTwo);
-            _match.CreateTennisMatch();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -156,6 +154,58 @@ namespace MexicanTennisSimulator
             }
             else
                 tbWinner.Text = eCourtElements.PlayerTwo.ToString();
-        }        
+        }
+
+		private void btnMatch_Click(object sender, RoutedEventArgs e)
+		{
+			var match = new Match(ref _playerOne, ref _playerTwo);
+			match.StartMatch();
+
+			var nL = Environment.NewLine;
+			string txtPlayer = "Sets P1" + nL + "0" + nL, txtEnding = "Sets P2" + nL + "0" + nL, txtBeginning = "", txtBat = "";
+			int pointsP1 = 0;
+			int pointsP2 = 0;
+			foreach (var item in match.Sets)
+			{
+				if (item.Winner == eCourtElements.PlayerWithServiceInFirstGame)
+				{
+					if (item.PlayerWithServiceInFirstGame.Equals(_playerOne))
+					{
+						pointsP1 += 1;
+						txtPlayer += pointsP1 + nL; 
+					}
+					else
+					{
+						pointsP2 += 1;
+						txtEnding += pointsP2 + nL;
+					}
+				}
+				else
+				{
+					if (item.PlayerWithServiceInFirstGame.Equals(_playerOne))
+					{
+						pointsP2 += 1;
+						txtEnding += pointsP2 + nL;
+					}
+					else
+					{
+						pointsP1 += 1;
+						txtPlayer += pointsP1 + nL;
+					}
+				}
+			}
+
+			tbPlayer.Text = txtPlayer;
+			tbBeginning.Text = txtBeginning;
+			tbEnding.Text = txtEnding;
+			tbBat.Text = txtBat;
+
+			if (match.Winner == eCourtElements.PlayerWithServiceInFirstGame)
+			{
+				tbWinner.Text = eCourtElements.PlayerOne.ToString();
+			}
+			else
+				tbWinner.Text = eCourtElements.PlayerTwo.ToString();
+		}        
     }
 }

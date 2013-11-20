@@ -18,57 +18,67 @@ namespace MexicanTennisSimulator.Classes
         public static readonly double BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
         public static readonly double BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
 
-        private Player _playerOne;
-        private Player _playerTwo;
-        private int _numberSets;
-        private bool _matchRunning;
-        private List<Set> _sets;
+		private Player _playerWithServiceInFirstGame;
+		private Player _playerWithoutServiceInFirstGame;
+		private Set _set;
+		private List<Set> _sets;
+		private eCourtElements _winner;
+		private bool _matchRunning;
+		private bool _matchFinished;
+		private int _numberSets;
+		private int _sets4Win;
+		private int _setsPlayerWithServiceInFirstGame = 0;
+		private int _setsPlayerWithoutServiceInFirstGame = 0;
 
-        public Player PlayerOne
-        {
-            get { return _playerOne; }
-            set
-            {
-                if (!_matchRunning)
-                {
-                    _playerOne = value; 
-                }
-            }
-        }
+		public List<Set> Sets
+		{
+			get
+			{
+				return _sets;
+			}
+		}
 
-        public Player PlayerTwo
-        {
-            get { return _playerTwo; }
-            set
-            {
-                if (!_matchRunning)
-                {
-                    _playerTwo = value; 
-                }
-            }
-        }
+		public eCourtElements Winner
+		{
+			get
+			{
+				return _winner;
+			}
+			private set
+			{
+				_winner = value;
+				_matchFinished = true;
+			}
+		}
 
-        public int NumberSets
-        {
-            get { return _numberSets; }
-            set
-            {
-                if (!_matchRunning)
-                {
-                    _numberSets = value; 
-                }
-            }
-        }
-
-        public bool MatchRunning
-        {
-            get { return _matchRunning; }
-        }
+		public int NumberSets
+		{
+			get
+			{
+				return _numberSets;
+			}
+			set
+			{
+				if (_matchRunning || 
+					_matchFinished ||
+					value % 2 == 0 ||
+					value <= 0)
+				{
+					throw new Exception();
+				}
+				else
+				{
+					_numberSets = value;
+					_sets4Win = (int)(value / 2D + 1D / 2D);
+				}
+			}
+		}
 
         public Match(ref Player playerOne, ref Player playerTwo)
         {
-            _playerOne = playerOne;
-            _playerTwo = playerTwo;
+            _playerWithServiceInFirstGame = playerOne;
+            _playerWithoutServiceInFirstGame = playerTwo;
+			NumberSets = 5;
         }
 
         public void StartMatch()
@@ -77,15 +87,57 @@ namespace MexicanTennisSimulator.Classes
             {
                 _matchRunning = true;
                 _sets = new List<Set>();
-                for (int set = 1; set <= _numberSets; set++)
-			    {
-                    Set setTennis = new Set(ref _playerOne, ref _playerTwo);
-			    }
+				do
+				{
+					if (_sets.Count == 0)
+					{
+						_set = new Set(ref _playerWithServiceInFirstGame, ref _playerWithoutServiceInFirstGame); 
+					}
+					else
+					{
+						Player servicePlayerLastGame = _sets[_sets.Count - 1].Games[_sets[_sets.Count - 1].Games.Count - 1].PlayerWithService;
+						if (servicePlayerLastGame.Equals(_playerWithoutServiceInFirstGame))
+						{
+							_set = new Set(ref _playerWithServiceInFirstGame, ref _playerWithoutServiceInFirstGame); 
+						}
+						else
+						{
+							_set = new Set(ref _playerWithoutServiceInFirstGame, ref _playerWithServiceInFirstGame); 
+						}
+					}
+					StartAndSaveSet();
+					CalcMatchWinner();
+				} while (!_matchFinished);
+
+				_matchRunning = false;
             }
         }
 
-        public void CreateTennisMatch()
-        {
-        }
+		private void CalcMatchWinner()
+		{
+			if (_set.Winner == eCourtElements.PlayerWithServiceInFirstGame)
+			{
+				_setsPlayerWithServiceInFirstGame += 1;
+			}
+			else
+			{
+				_setsPlayerWithoutServiceInFirstGame += 1;
+			}
+
+			if (_setsPlayerWithServiceInFirstGame == _sets4Win)
+			{
+				Winner = eCourtElements.PlayerWithServiceInFirstGame;
+			}
+			else if (_setsPlayerWithoutServiceInFirstGame == _sets4Win)
+			{
+				Winner = eCourtElements.PlayerWithoutServiceInFirstGame;
+			}
+		}
+
+		private void StartAndSaveSet()
+		{
+			_set.StartSet();
+			_sets.Add(_set);
+		}
     }
 }
