@@ -18,8 +18,8 @@ namespace MexicanTennisSimulator.Classes
         public static readonly double BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
         public static readonly double BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
 
-		private Player _playerWithServiceInFirstGame;
-		private Player _playerWithoutServiceInFirstGame;
+		private Player _playerOne;
+		private Player _playerTwo;
 		private Set _set;
 		private List<Set> _sets;
 		private eCourtElements _winner;
@@ -27,8 +27,8 @@ namespace MexicanTennisSimulator.Classes
 		private bool _matchFinished;
 		private int _numberSets;
 		private int _sets4Win;
-		private int _setsPlayerWithServiceInFirstGame = 0;
-		private int _setsPlayerWithoutServiceInFirstGame = 0;
+		private int _setsPlayerOne = 0;
+		private int _setsPlayerTwo = 0;
 
 		public List<Set> Sets
 		{
@@ -74,10 +74,10 @@ namespace MexicanTennisSimulator.Classes
 			}
 		}
 
-        public Match(ref Player playerOne, ref Player playerTwo)
+        public Match(ref Player playerWithServiceInFirstGame, ref Player playerWithoutServiceInFirstGame)
         {
-            _playerWithServiceInFirstGame = playerOne;
-            _playerWithoutServiceInFirstGame = playerTwo;
+            _playerOne = playerWithServiceInFirstGame;
+            _playerTwo = playerWithoutServiceInFirstGame;
 			NumberSets = 5;
         }
 
@@ -91,18 +91,18 @@ namespace MexicanTennisSimulator.Classes
 				{
 					if (_sets.Count == 0)
 					{
-						_set = new Set(ref _playerWithServiceInFirstGame, ref _playerWithoutServiceInFirstGame); 
+						_set = new Set(ref _playerOne, ref _playerTwo); 
 					}
 					else
 					{
 						Player servicePlayerLastGame = _sets[_sets.Count - 1].Games[_sets[_sets.Count - 1].Games.Count - 1].PlayerWithService;
-						if (servicePlayerLastGame.Equals(_playerWithoutServiceInFirstGame))
+						if (servicePlayerLastGame.Equals(_playerOne))
 						{
-							_set = new Set(ref _playerWithServiceInFirstGame, ref _playerWithoutServiceInFirstGame); 
+                            _set = new Set(ref _playerTwo, ref _playerOne);
 						}
 						else
 						{
-							_set = new Set(ref _playerWithoutServiceInFirstGame, ref _playerWithServiceInFirstGame); 
+                            _set = new Set(ref _playerOne, ref _playerTwo); 
 						}
 					}
 					StartAndSaveSet();
@@ -117,20 +117,34 @@ namespace MexicanTennisSimulator.Classes
 		{
 			if (_set.Winner == eCourtElements.PlayerWithServiceInFirstGame)
 			{
-				_setsPlayerWithServiceInFirstGame += 1;
+                if (_set.PlayerWithServiceInFirstGame.Equals(_playerOne))
+                {
+                    _setsPlayerOne += 1; 
+                }
+                else
+                {
+                    _setsPlayerTwo += 1;
+                }
 			}
 			else
 			{
-				_setsPlayerWithoutServiceInFirstGame += 1;
+                if (_set.PlayerWithServiceInFirstGame.Equals(_playerOne))
+                {
+                    _setsPlayerTwo += 1;
+                }
+                else
+                {
+                    _setsPlayerOne += 1;
+                }
 			}
 
-			if (_setsPlayerWithServiceInFirstGame == _sets4Win)
+			if (_setsPlayerOne == _sets4Win)
 			{
-				Winner = eCourtElements.PlayerWithServiceInFirstGame;
+                Winner = eCourtElements.PlayerOne;
 			}
-			else if (_setsPlayerWithoutServiceInFirstGame == _sets4Win)
+			else if (_setsPlayerTwo == _sets4Win)
 			{
-				Winner = eCourtElements.PlayerWithoutServiceInFirstGame;
+				Winner = eCourtElements.PlayerTwo;
 			}
 		}
 
