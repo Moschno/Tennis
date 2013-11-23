@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:MexicanTennisSimulator"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
-    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:Classes="clr-namespace:MexicanTennisSimulator.Classes" x:Name="winMain"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:Classes="clr-namespace:MexicanTennisSimulator.Classes" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" x:Name="winMain"
     x:Class="MexicanTennisSimulator.MainWindow"
     Title="Mexican Tennis Simulator" Height="600" Width="1000"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
@@ -12,8 +12,120 @@
     >
     <Grid x:Name="gridTennis">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="colPlayerOne" Width="7*"/>
+            <ColumnDefinition x:Name="colCenter" Width="17*"/>
+            <ColumnDefinition x:Name="colPlayer2" Width="7*"/>
         </Grid.ColumnDefinitions>
-        <Label HorizontalAlignment="Left" Margin="57,96,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnDebug" Content="Debug" HorizontalAlignment="Left" Margin="29,27,0,0" VerticalAlignment="Top" Width="75" Click="btnDebug_Click"/>
+        <Label HorizontalAlignment="Left" Margin="57,96,0,0" VerticalAlignment="Top" Height="10" Width="10"/>
+        <Button x:Name="btnDebug" Content="Debug" HorizontalAlignment="Left" Margin="-129,3,0,0" VerticalAlignment="Top" Width="75" Click="btnDebug_Click" Height="22"/>
+        <dxlc:GroupBox Header="Spieler 1" Margin="5">
+            <StackPanel VerticalAlignment="Top">
+                <dxlc:GroupBox Header="Stärke" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Geschwindigkeit" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit2}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit2" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Präzision" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit3}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit3" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Aufschlag" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit4}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit4" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Return" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit5}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit5" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+            </StackPanel>
+        </dxlc:GroupBox>
+        <dxlc:GroupBox Grid.Column="2" Header="Spieler 2" Margin="5">
+            <StackPanel VerticalAlignment="Top">
+                <dxlc:GroupBox Header="Stärke" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit6}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit6" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Geschwindigkeit" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit7}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit7" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Präzision" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit8}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit8" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Aufschlag" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit9}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit9" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+                <dxlc:GroupBox Header="Return" Height="87" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" Width="20" Height="20" Margin="13,11,14,11" Text="{Binding Value, ElementName=trackBarEdit10}"/>
+                        <dxe:TrackBarEdit x:Name="trackBarEdit10" Grid.Column="1" Maximum="10" Minimum="1" TickFrequency="1" Value="5" EditValueChanged="trackBarEdit_EditValueChanged"/>
+                    </Grid>
+                </dxlc:GroupBox>
+            </StackPanel>
+        </dxlc:GroupBox>
+        <Canvas x:Name="canvasCenter" Grid.Column="1" SizeChanged="Canvas_SizeChanged" Opacity="0.02"/>
     </Grid>
 </dx:DXWindow>
