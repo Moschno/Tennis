@@ -14,6 +14,7 @@ using DevExpress.Xpf.Core;
 using MexicanTennisSimulator.Classes;
 using System.Windows.Media.Animation;
 using System.Security.Cryptography;
+using System.Data;
 
 
 namespace MexicanTennisSimulator
@@ -22,7 +23,9 @@ namespace MexicanTennisSimulator
     {
         private Player _playerOne;
         private Player _playerTwo;
-        private Draw _drawOnCanvas;
+        private Draw _drawOnGridCenter;
+        private DataTable _tblMatchStats;
+        private Match _match;
 
         public MainWindow()
         {
@@ -33,8 +36,25 @@ namespace MexicanTennisSimulator
         {
             _playerOne = new Player(5, 5, 5, 5, 5);
             _playerTwo = new Player(5, 5, 5, 5, 5);
-            _drawOnCanvas = new Draw(ref canvasCenter);
-            _drawOnCanvas.DrawCourt();
+
+            //_drawOnGridCenter = new Draw(ref gridTennis, 1);
+            //_drawOnGridCenter.DrawCourt();
+
+            InitGridMatchStats();
+        }
+
+        private void InitGridMatchStats()
+        {
+            DataColumn[] cols = new DataColumn[3];
+            cols[0] = new DataColumn("Spieler 1");
+            cols[1] = new DataColumn(" ");
+            cols[2] = new DataColumn("Spieler 2");
+
+            _tblMatchStats = new DataTable();
+            _tblMatchStats.Columns.AddRange(cols);
+
+            gridMatchStats.ItemsSource = _tblMatchStats.DefaultView;
+            gridMatchStats.DataContext = _tblMatchStats.DefaultView;
         }
 
         private void btnDebug_Click(object sender, RoutedEventArgs e)
@@ -91,10 +111,112 @@ namespace MexicanTennisSimulator
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (canvasCenter.IsLoaded)
+            if (gridTennis.IsLoaded)
             {
-                _drawOnCanvas.ResizeCourt(); 
+                _drawOnGridCenter.ResizeCourt(); 
             }
-        }        
+        }
+
+        private void btnStartMatch_Click(object sender, RoutedEventArgs e)
+        {
+            _tblMatchStats.Clear();
+            _match = new Match(ref _playerOne, ref _playerTwo);
+            _match.StartMatch();
+            CalcMatchStats();
+        }
+
+        private void CalcMatchStats()
+        {
+            int[] firstServe = new int[2];
+            int[] aces = new int[2];
+            int[] serviceWinner = new int[2];
+            int[] doubleFaults = new int[2];
+            foreach (var set in _match.Sets)
+            {
+                foreach (var game in set.Games)
+                {
+                    foreach (var rally in game.Rallys)
+                    {
+                        foreach (var bat in rally.Bats)
+                        {
+                            if (bat.FinalBatProps.BatType == eBatType.FirstService)
+                            {
+                                if (bat.PlayerWithBat.Equals(_playerOne))
+                                {
+                                    firstServe[0] += 1;
+                                }
+                                else
+                                {
+                                    firstServe[1] += 1;
+                                }
+                            }
+
+                            if (bat.WhatHappend == eBatResult.Ace)
+                            {
+                                if (rally.PlayerWithService.Equals(_playerOne))
+                                {
+                                    aces[0] += 1;
+                                }
+                                else
+                                    aces[1] += 1;
+                            }
+
+                            if (bat.WhatHappend == eBatResult.BallIsNotTaken &&
+                                bat.FinalBatProps.BatPlayerBat == eBats.Service)
+                            {
+                                if (rally.PlayerWithService.Equals(_playerOne))
+                                {
+                                    serviceWinner[0] += 1;
+                                }
+                                else
+                                    serviceWinner[1] += 1;
+                            }
+
+                            if (bat.WhatHappend == eBatResult.BallIsOut &&
+                                bat.FinalBatProps.BatType == eBatType.SecondService)
+                            {
+                                if (rally.PlayerWithService.Equals(_playerOne))
+                                {
+                                    doubleFaults[0] += 1;
+                                }
+                                else
+                                    doubleFaults[1] += 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            DataRow rowFirstServices = _tblMatchStats.NewRow();
+
+            rowFirstServices[0] = firstServe[0];
+            rowFirstServices[1] = "Erste Aufschläge";
+            rowFirstServices[2] = firstServe[1];
+            _tblMatchStats.Rows.Add(rowFirstServices);
+
+            DataRow rowAces = _tblMatchStats.NewRow();
+            rowAces[0] = aces[0];
+            rowAces[1] = "Asse";
+            rowAces[2] = aces[1];
+            _tblMatchStats.Rows.Add(rowAces);
+
+            DataRow rowServiceWinner = _tblMatchStats.NewRow();
+            rowServiceWinner[0] = serviceWinner[0];
+            rowServiceWinner[1] = "Aufschlag-Winner";
+            rowServiceWinner[2] = serviceWinner[1];
+            _tblMatchStats.Rows.Add(rowServiceWinner);
+
+            DataRow rowDoubleFaults = _tblMatchStats.NewRow();
+            rowDoubleFaults[0] = doubleFaults[0];
+            rowDoubleFaults[1] = "Doppelfehler";
+            rowDoubleFaults[2] = doubleFaults[1];
+            _tblMatchStats.Rows.Add(rowDoubleFaults);
+        }
+
+        private void btnRealtime_Click(object sender, RoutedEventArgs e)
+        {
+            WinDebug winDebug = new WinDebug(ref _playerOne, ref _playerTwo);
+            winDebug.Show();
+        }
     }
 }

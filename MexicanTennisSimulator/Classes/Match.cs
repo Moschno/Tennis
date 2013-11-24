@@ -78,6 +78,8 @@ namespace MexicanTennisSimulator.Classes
         {
             _playerOne = playerWithServiceInFirstGame;
             _playerTwo = playerWithoutServiceInFirstGame;
+            _playerOne.MatchOpponent = _playerTwo;
+            _playerTwo.MatchOpponent = _playerOne;
 			NumberSets = 5;
         }
 

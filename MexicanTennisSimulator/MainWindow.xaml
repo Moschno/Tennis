@@ -17,7 +17,6 @@
             <ColumnDefinition x:Name="colPlayer2" Width="7*"/>
         </Grid.ColumnDefinitions>
         <Label HorizontalAlignment="Left" Margin="57,96,0,0" VerticalAlignment="Top" Height="10" Width="10"/>
-        <Button x:Name="btnDebug" Content="Debug" HorizontalAlignment="Left" Margin="-129,3,0,0" VerticalAlignment="Top" Width="75" Click="btnDebug_Click" Height="22"/>
         <dxlc:GroupBox Header="Spieler 1" Margin="5">
             <StackPanel VerticalAlignment="Top">
                 <dxlc:GroupBox Header="Stärke" Height="87" Margin="0,0,0,10">
@@ -126,6 +125,25 @@
                 </dxlc:GroupBox>
             </StackPanel>
         </dxlc:GroupBox>
-        <Canvas x:Name="canvasCenter" Grid.Column="1" SizeChanged="Canvas_SizeChanged" Opacity="0.02"/>
+        <DockPanel Grid.Column="1">
+            <dxlc:GroupBox Header="GroupBox" Margin="10,10,10,0" DockPanel.Dock="Top">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="btnStartMatch" Content="Start" Margin="10,5" FontWeight="Bold" FontSize="22" Click="btnStartMatch_Click"/>
+                    <Button x:Name="btnRealtime" Content="Echtzeit" Grid.Column="1" Margin="10,5" FontSize="24" FontWeight="Bold" Click="btnRealtime_Click"/>
+                </Grid>
+            </dxlc:GroupBox>
+            <dxlc:GroupBox Grid.Column="1" Header="GroupBox" Margin="10,0,10,10" Height="69" VerticalAlignment="Bottom" DockPanel.Dock="Bottom"/>
+            <dxlc:GroupBox Header="GroupBox" Margin="10" DockPanel.Dock="Bottom">
+                <dxg:GridControl x:Name="gridMatchStats" AutoPopulateColumns="True">
+                    <dxg:GridControl.View>
+                        <dxg:TableView ShowTotalSummary="True" ShowGroupPanel="False"/>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxlc:GroupBox>
+        </DockPanel>
     </Grid>
 </dx:DXWindow>

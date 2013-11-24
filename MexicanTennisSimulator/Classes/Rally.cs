@@ -19,6 +19,16 @@ namespace MexicanTennisSimulator.Classes
         private bool _rallyRunning;
         private bool _rallyFinished;
 
+        public Player PlayerWithService
+        {
+            get { return _playerWithService; }
+        }
+
+        public Player PlayerWithoutService
+        {
+            get { return _playerWithoutService; }
+        }
+
         public List<Bat> Bats
         {
             get { return _bats; }
@@ -40,10 +50,7 @@ namespace MexicanTennisSimulator.Classes
             _playerWithService = playerWithService;
             _playerWithoutService = playerWithoutService;
 
-            //todo: Kommt später in die Klasse "Match"
-            _playerWithService.MatchOpponent = playerWithoutService;
             _playerWithService.Gameball = _gameBall;
-            _playerWithoutService.MatchOpponent = playerWithService;
             _playerWithoutService.Gameball = _gameBall;
         }
 

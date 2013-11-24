@@ -83,14 +83,14 @@ namespace MexicanTennisSimulator.Classes
 
             if (_tempBatProps.BatType == eBatType.FirstService)
             {
-                int safety = 10;
+                int safety = 5;
                 int disturbFactor = CalcBatTargetDisturb();
                 _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor)
                                                                          , Match.BallServiceOutY + safety - disturbFactor);
             }
             else if (_tempBatProps.BatType == eBatType.SecondService)
             {
-                int safety = 30;
+                int safety = 20;
                 int disturbFactor = CalcBatTargetDisturb();
                 _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor)
                                                                          , Match.BallServiceOutY + safety - disturbFactor);
