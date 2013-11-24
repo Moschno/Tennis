@@ -127,60 +127,85 @@ namespace MexicanTennisSimulator
 
         private void CalcMatchStats()
         {
+            int[] firstServeNotOut = new int[2];
             int[] firstServe = new int[2];
             int[] aces = new int[2];
             int[] serviceWinner = new int[2];
             int[] doubleFaults = new int[2];
+            int[] fastestServeSpeed = new int[2];
+            List<double[]> firstServeSpeeds = new List<double[]>();
+            List<double[]> secondServeSpeeds = new List<double[]>();
+            double[] average2ndServeSpeed = new double[4];
             foreach (var set in _match.Sets)
             {
                 foreach (var game in set.Games)
                 {
                     foreach (var rally in game.Rallys)
                     {
+                        var lastServiceBatOfRally = (from p in rally.Bats where p.FinalBatProps.BatPlayerBat == eBats.Service select p).Last();
+
                         foreach (var bat in rally.Bats)
                         {
-                            if (bat.FinalBatProps.BatType == eBatType.FirstService)
+                            if (bat.FinalBatProps.BatPlayerBat == eBats.Service)
                             {
-                                if (bat.PlayerWithBat.Equals(_playerOne))
+                                if (bat.FinalBatProps.BatType == eBatType.FirstService)
                                 {
-                                    firstServe[0] += 1;
+                                    if (bat.PlayerWithBat.Equals(_playerOne))
+                                    {
+                                        firstServeSpeeds.Add(new double[2] { bat.FinalBatProps.BallSpeedTillFirstLanding_KmH, 0 });
+                                        firstServe[0] += 1;
+                                        if (bat.WhatHappend != eBatResult.BallIsOut)
+                                        {
+                                            firstServeNotOut[0] += 1; 
+                                        }
+                                    }
+                                    else
+                                    {
+                                        firstServeSpeeds.Add(new double[2] { 0, bat.FinalBatProps.BallSpeedTillFirstLanding_KmH });
+                                        firstServe[1] += 1;
+                                        if (bat.WhatHappend != eBatResult.BallIsOut)
+                                        {
+                                            firstServeNotOut[1] += 1;
+                                        }
+                                    }
                                 }
-                                else
-                                {
-                                    firstServe[1] += 1;
-                                }
-                            }
 
-                            if (bat.WhatHappend == eBatResult.Ace)
-                            {
-                                if (rally.PlayerWithService.Equals(_playerOne))
+                                if (bat.FinalBatProps.BatType == eBatType.SecondService)
                                 {
-                                    aces[0] += 1;
+                                    if (bat.WhatHappend == eBatResult.BallIsOut)
+                                    {
+                                        if (rally.PlayerWithService.Equals(_playerOne))
+                                        {
+                                            secondServeSpeeds.Add(new double[2] { bat.FinalBatProps.BallSpeedTillFirstLanding_KmH, 0 });
+                                            doubleFaults[0] += 1;
+                                        }
+                                        else
+                                        {
+                                            secondServeSpeeds.Add(new double[2] { 0, bat.FinalBatProps.BallSpeedTillFirstLanding_KmH });
+                                            doubleFaults[1] += 1;
+                                        }
+                                    }
                                 }
-                                else
-                                    aces[1] += 1;
-                            }
 
-                            if (bat.WhatHappend == eBatResult.BallIsNotTaken &&
-                                bat.FinalBatProps.BatPlayerBat == eBats.Service)
-                            {
-                                if (rally.PlayerWithService.Equals(_playerOne))
+                                if (bat.WhatHappend == eBatResult.Ace)
                                 {
-                                    serviceWinner[0] += 1;
+                                    if (rally.PlayerWithService.Equals(_playerOne))
+                                    {
+                                        aces[0] += 1;
+                                    }
+                                    else
+                                        aces[1] += 1;
                                 }
-                                else
-                                    serviceWinner[1] += 1;
-                            }
 
-                            if (bat.WhatHappend == eBatResult.BallIsOut &&
-                                bat.FinalBatProps.BatType == eBatType.SecondService)
-                            {
-                                if (rally.PlayerWithService.Equals(_playerOne))
+                                if (bat.WhatHappend == eBatResult.BallIsNotTaken)
                                 {
-                                    doubleFaults[0] += 1;
+                                    if (rally.PlayerWithService.Equals(_playerOne))
+                                    {
+                                        serviceWinner[0] += 1;
+                                    }
+                                    else
+                                        serviceWinner[1] += 1;
                                 }
-                                else
-                                    doubleFaults[1] += 1;
                             }
                         }
                     }
@@ -189,9 +214,9 @@ namespace MexicanTennisSimulator
 
             DataRow rowFirstServices = _tblMatchStats.NewRow();
 
-            rowFirstServices[0] = firstServe[0];
+            rowFirstServices[0] = firstServeNotOut[0] + " / " + firstServe[0];
             rowFirstServices[1] = "Erste Aufschläge";
-            rowFirstServices[2] = firstServe[1];
+            rowFirstServices[2] = firstServeNotOut[1] + " / " + firstServe[1];
             _tblMatchStats.Rows.Add(rowFirstServices);
 
             DataRow rowAces = _tblMatchStats.NewRow();
@@ -211,6 +236,24 @@ namespace MexicanTennisSimulator
             rowDoubleFaults[1] = "Doppelfehler";
             rowDoubleFaults[2] = doubleFaults[1];
             _tblMatchStats.Rows.Add(rowDoubleFaults);
+
+            DataRow rowFastestServeSpeed = _tblMatchStats.NewRow();
+            rowFastestServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Max().Round();
+            rowFastestServeSpeed[1] = "Schnellster Aufschlag";
+            rowFastestServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Max().Round();
+            _tblMatchStats.Rows.Add(rowFastestServeSpeed);
+
+            DataRow rowAverageFirstServeSpeed = _tblMatchStats.NewRow();
+            rowAverageFirstServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Average().Round();
+            rowAverageFirstServeSpeed[1] = "Durchschnittliche Aufschlagsgeschw. 1st";
+            rowAverageFirstServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Average().Round();
+            _tblMatchStats.Rows.Add(rowAverageFirstServeSpeed);
+
+            DataRow rowAverageSecondServeSpeed = _tblMatchStats.NewRow();
+            rowAverageSecondServeSpeed[0] = (from p in secondServeSpeeds where p[0] > 0 select p[0]).Average().Round();
+            rowAverageSecondServeSpeed[1] = "Durchschnittliche Aufschlagsgeschw. 2nd";
+            rowAverageSecondServeSpeed[2] = (from p in secondServeSpeeds where p[1] > 0 select p[1]).Average().Round();
+            _tblMatchStats.Rows.Add(rowAverageSecondServeSpeed);
         }
 
         private void btnRealtime_Click(object sender, RoutedEventArgs e)
