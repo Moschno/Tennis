@@ -55,13 +55,9 @@ namespace MexicanTennisSimulator.Classes
             get { return _games4Win; }
             set 
             {
-                if (_setRunning || _setFinished)
+                if (!_setRunning || !_setFinished)
                 {
-                    throw new Exception();
-                }
-                else
-                {
-                    _games4Win = value; 
+                    _games4Win = value;
                 }
             }
         }

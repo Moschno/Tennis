@@ -11,10 +11,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using DevExpress.Xpf.Core;
+using DevExpress.Xpf.Themes;
 using MexicanTennisSimulator.Classes;
 using System.Windows.Media.Animation;
 using System.Security.Cryptography;
 using System.Data;
+using System.Windows.Forms;
+using System.Drawing;
 
 
 namespace MexicanTennisSimulator
@@ -23,8 +26,8 @@ namespace MexicanTennisSimulator
     {
         private Player _playerOne;
         private Player _playerTwo;
-        private Draw _drawOnGridCenter;
         private DataTable _tblMatchStats;
+        private DataTable _tblMatchHistory;
         private Match _match;
 
         public MainWindow()
@@ -36,15 +39,13 @@ namespace MexicanTennisSimulator
         {
             _playerOne = new Player(5, 5, 5, 5, 5);
             _playerTwo = new Player(5, 5, 5, 5, 5);
-
-            //_drawOnGridCenter = new Draw(ref gridTennis, 1);
-            //_drawOnGridCenter.DrawCourt();
-
-            InitGridMatchStats();
         }
 
         private void InitGridMatchStats()
         {
+            if (_tblMatchStats != null)
+                _tblMatchStats.Clear(); 
+
             DataColumn[] cols = new DataColumn[3];
             cols[0] = new DataColumn("Spieler 1");
             cols[1] = new DataColumn(" ");
@@ -56,7 +57,41 @@ namespace MexicanTennisSimulator
             gridMatchStats.ItemsSource = _tblMatchStats.DefaultView;
             gridMatchStats.DataContext = _tblMatchStats.DefaultView;
 
-			gridMatchStats.Columns[1].Width = 300;
+			gridMatchStats.Columns[1].Width = 250;
+        }
+
+        private void InitGridMatchHistory()
+        {
+            if (_tblMatchHistory != null)
+                _tblMatchHistory.Clear();
+            
+            DataColumn[] cols = new DataColumn[_match.Sets.Count + 1];
+            for (int i = 0; i < cols.Length; i++)
+                cols[i] = new DataColumn();
+
+            _tblMatchHistory = new DataTable();
+            _tblMatchHistory.Columns.AddRange(cols);
+
+            DataRow rowMatchHistoryPlayerOne = _tblMatchHistory.NewRow();
+            DataRow rowMatchHistoryPlayerTwo = _tblMatchHistory.NewRow();
+
+            _tblMatchHistory.Rows.Add(rowMatchHistoryPlayerOne);
+            _tblMatchHistory.Rows.Add(rowMatchHistoryPlayerTwo);
+
+            _tblMatchHistory.Rows[0][0] = "Spieler 1";
+            _tblMatchHistory.Rows[1][0] = "Spieler 2";
+
+            gridMatchHistory.Columns.Clear();
+            gridMatchHistory.ItemsSource = _tblMatchHistory.DefaultView;
+            gridMatchHistory.DataContext = _tblMatchHistory.DefaultView;
+
+            foreach (var col in gridMatchHistory.Columns)
+            {
+                if (col.VisibleIndex != 0)
+                {
+                    col.Width = 25;
+                }
+            }
         }
 
         private void btnDebug_Click(object sender, RoutedEventArgs e)
@@ -113,32 +148,31 @@ namespace MexicanTennisSimulator
 
         private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (gridTennis.IsLoaded)
-            {
-                _drawOnGridCenter.ResizeCourt(); 
-            }
         }
 
         private void btnStartMatch_Click(object sender, RoutedEventArgs e)
         {
-            _tblMatchStats.Clear();
             _match = new Match(ref _playerOne, ref _playerTwo);
             _match.StartMatch();
+            InitGridMatchStats();
+            InitGridMatchHistory();
             CalcMatchStats();
+            CalcHistoryStats();
         }
 
         private void CalcMatchStats()
         {
             int[] firstServeNotOut = new int[2];
             int[] firstServe = new int[2];
+            int[] secondServeNoOut = new int[2];
             int[] aces = new int[2];
-            int[] serviceWinner = new int[2];
             int[] doubleFaults = new int[2];
             int[] fastestServeSpeed = new int[2];
 			int[] winningOn1stServe = new int[2];
 			int[] winningOn2ndServe = new int[2];
 			List<double[]> firstServeSpeeds = new List<double[]>();
-			List<double[]> secondServeSpeeds = new List<double[]>(); 
+			List<double[]> secondServeSpeeds = new List<double[]>();
+            int[] totalPointsWon = new int[2];
             
 
             foreach (var set in _match.Sets)
@@ -149,6 +183,13 @@ namespace MexicanTennisSimulator
                     {
 						if (rally.Winner == eCourtElements.PlayerWithService)
 						{
+                            if (rally.PlayerWithService.Equals(_playerOne))
+                            {
+                                totalPointsWon[0] += 1;
+                            }
+                            else
+                                totalPointsWon[1] += 1;
+
 							var lastServiceBatOfRally = (from p in rally.Bats
 														 where p.FinalBatProps.BatPlayerBat == eBats.Service
 														 select p).Last();
@@ -161,7 +202,7 @@ namespace MexicanTennisSimulator
 								else
 									winningOn1stServe[1] += 1;
 							}
-							else if (lastServiceBatOfRally.FinalBatProps.BatType == eBatType.FirstService)
+							else if (lastServiceBatOfRally.FinalBatProps.BatType == eBatType.SecondService)
 							{
 								if (rally.PlayerWithService.Equals(_playerOne))
 								{
@@ -171,11 +212,30 @@ namespace MexicanTennisSimulator
 									winningOn2ndServe[1] += 1;
 							}
 						}
+                        else
+                        {
+                            if (rally.PlayerWithoutService.Equals(_playerOne))
+                            {
+                                totalPointsWon[0] += 1;
+                            }
+                            else
+                                totalPointsWon[1] += 1;
+                        }
 
                         foreach (var bat in rally.Bats)
                         {
                             if (bat.FinalBatProps.BatPlayerBat == eBats.Service)
                             {
+                                if (bat.WhatHappend == eBatResult.Ace)
+                                {
+                                    if (rally.PlayerWithService.Equals(_playerOne))
+                                    {
+                                        aces[0] += 1;
+                                    }
+                                    else
+                                        aces[1] += 1;
+                                }
+
                                 if (bat.FinalBatProps.BatType == eBatType.FirstService)
                                 {
                                     if (bat.PlayerWithBat.Equals(_playerOne))
@@ -200,39 +260,26 @@ namespace MexicanTennisSimulator
 
                                 if (bat.FinalBatProps.BatType == eBatType.SecondService)
                                 {
-                                    if (bat.WhatHappend == eBatResult.BallIsOut)
+                                    if (bat.PlayerWithBat.Equals(_playerOne))
                                     {
-                                        if (rally.PlayerWithService.Equals(_playerOne))
+                                        secondServeSpeeds.Add(new double[2] { bat.FinalBatProps.BallSpeedTillFirstLanding_KmH, 0 });
+                                        if (bat.WhatHappend != eBatResult.BallIsOut)
                                         {
-                                            secondServeSpeeds.Add(new double[2] { bat.FinalBatProps.BallSpeedTillFirstLanding_KmH, 0 });
-                                            doubleFaults[0] += 1;
+                                            secondServeNoOut[0] += 1;
                                         }
                                         else
+                                            doubleFaults[0] += 1;
+                                    }
+                                    else
+                                    {
+                                        secondServeSpeeds.Add(new double[2] { 0, bat.FinalBatProps.BallSpeedTillFirstLanding_KmH });
+                                        if (bat.WhatHappend != eBatResult.BallIsOut)
                                         {
-                                            secondServeSpeeds.Add(new double[2] { 0, bat.FinalBatProps.BallSpeedTillFirstLanding_KmH });
-                                            doubleFaults[1] += 1;
+                                            secondServeNoOut[1] += 1;
                                         }
+                                        else
+                                            doubleFaults[1] += 1; 
                                     }
-                                }
-
-                                if (bat.WhatHappend == eBatResult.Ace)
-                                {
-                                    if (rally.PlayerWithService.Equals(_playerOne))
-                                    {
-                                        aces[0] += 1;
-                                    }
-                                    else
-                                        aces[1] += 1;
-                                }
-
-                                if (bat.WhatHappend == eBatResult.BallIsNotTaken)
-                                {
-                                    if (rally.PlayerWithService.Equals(_playerOne))
-                                    {
-                                        serviceWinner[0] += 1;
-                                    }
-                                    else
-                                        serviceWinner[1] += 1;
                                 }
                             }
                         }
@@ -242,9 +289,9 @@ namespace MexicanTennisSimulator
 
             DataRow rowFirstServices = _tblMatchStats.NewRow();
 
-            rowFirstServices[0] = firstServeNotOut[0] + " / " + firstServe[0];
+            rowFirstServices[0] = firstServeNotOut[0] + " / " + firstServe[0] + " (" + (int)(firstServeNotOut[0] * 100 / firstServe[0]) + "%)";
             rowFirstServices[1] = "Erste Aufschläge";
-            rowFirstServices[2] = firstServeNotOut[1] + " / " + firstServe[1];
+            rowFirstServices[2] = firstServeNotOut[1] + " / " + firstServe[1] + " (" + (int)(firstServeNotOut[1] * 100 / firstServe[1]) + "%)"; ;
             _tblMatchStats.Rows.Add(rowFirstServices);
 
             DataRow rowAces = _tblMatchStats.NewRow();
@@ -253,12 +300,6 @@ namespace MexicanTennisSimulator
             rowAces[2] = aces[1];
             _tblMatchStats.Rows.Add(rowAces);
 
-            DataRow rowServiceWinner = _tblMatchStats.NewRow();
-            rowServiceWinner[0] = serviceWinner[0];
-            rowServiceWinner[1] = "Aufschlag-Winner";
-            rowServiceWinner[2] = serviceWinner[1];
-            _tblMatchStats.Rows.Add(rowServiceWinner);
-
             DataRow rowDoubleFaults = _tblMatchStats.NewRow();
             rowDoubleFaults[0] = doubleFaults[0];
             rowDoubleFaults[1] = "Doppelfehler";
@@ -266,43 +307,90 @@ namespace MexicanTennisSimulator
             _tblMatchStats.Rows.Add(rowDoubleFaults);
 
             DataRow rowFastestServeSpeed = _tblMatchStats.NewRow();
-            rowFastestServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Max().Round();
+            rowFastestServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Max().Round() + " Km/h";
             rowFastestServeSpeed[1] = "Schnellster Aufschlag";
-            rowFastestServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Max().Round();
+            rowFastestServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Max().Round() + " Km/h";
             _tblMatchStats.Rows.Add(rowFastestServeSpeed);
 
             DataRow rowAverageFirstServeSpeed = _tblMatchStats.NewRow();
-            rowAverageFirstServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Average().Round();
-            rowAverageFirstServeSpeed[1] = "Durchschnittliche Aufschlagsgeschw. 1st";
-            rowAverageFirstServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Average().Round();
+            rowAverageFirstServeSpeed[0] = (from p in firstServeSpeeds where p[0] > 0 select p[0]).Average().Round() + " Km/h";
+            rowAverageFirstServeSpeed[1] = "Durchschnittliche Geschw. erster Aufschlag";
+            rowAverageFirstServeSpeed[2] = (from p in firstServeSpeeds where p[1] > 0 select p[1]).Average().Round() + " Km/h";
             _tblMatchStats.Rows.Add(rowAverageFirstServeSpeed);
 
 			var averagesPlayerOne = (from p in secondServeSpeeds where p[0] > 0 select p[0]);
 			var averagesPlayerTwo = (from p in secondServeSpeeds where p[1] > 0 select p[1]);
 
             DataRow rowAverageSecondServeSpeed = _tblMatchStats.NewRow();
-			if (averagesPlayerOne.Count() > 0)
-			{
-				rowAverageSecondServeSpeed[0] = (from p in secondServeSpeeds where p[0] > 0 select p[0]).Average().Round(); 
-			}
-            rowAverageSecondServeSpeed[1] = "Durchschnittliche Aufschlagsgeschw. 2nd";
+            if (averagesPlayerOne.Count() > 0)
+            {
+                rowAverageSecondServeSpeed[0] = (from p in secondServeSpeeds where p[0] > 0 select p[0]).Average().Round() + " Km/h";
+            }
+            else
+                rowAverageSecondServeSpeed[0] = "n.A.";
+            rowAverageSecondServeSpeed[1] = "Durchschnittliche Geschw. zweiter Aufschlag";
 			if (averagesPlayerTwo.Count() > 0)
 			{
-				rowAverageSecondServeSpeed[2] = (from p in secondServeSpeeds where p[1] > 0 select p[1]).Average().Round(); 
+                rowAverageSecondServeSpeed[2] = (from p in secondServeSpeeds where p[1] > 0 select p[1]).Average().Round() + " Km/h"; 
 			}
+            else
+                rowAverageSecondServeSpeed[2] = "n.A.";
             _tblMatchStats.Rows.Add(rowAverageSecondServeSpeed);
 
 			DataRow rowWinningOn1stServe = _tblMatchStats.NewRow();
-			rowWinningOn1stServe[0] = winningOn1stServe[0];
-			rowWinningOn1stServe[1] = "Winning on 1st Serve";
-			rowWinningOn1stServe[2] = winningOn1stServe[1];
+			rowWinningOn1stServe[0] = winningOn1stServe[0] + " / " + firstServeNotOut[0] + " (" + (int)(winningOn1stServe[0] * 100 / firstServeNotOut[0]) + "%)";
+			rowWinningOn1stServe[1] = "Punkt nach erstem Aufschlag";
+            rowWinningOn1stServe[2] = winningOn1stServe[1] + " / " + firstServeNotOut[1] + " (" + (int)(winningOn1stServe[1] * 100 / firstServeNotOut[1]) + "%)";
 			_tblMatchStats.Rows.Add(rowWinningOn1stServe);
 
 			DataRow rowWinningOn2ndServe = _tblMatchStats.NewRow();
-			rowWinningOn2ndServe[0] = winningOn2ndServe[0];
-			rowWinningOn2ndServe[1] = "Winning on 2nd Serve";
-			rowWinningOn2ndServe[2] = winningOn2ndServe[1];
+            rowWinningOn2ndServe[0] = winningOn2ndServe[0] + " / " + secondServeNoOut[0] + " (" + (int)(winningOn2ndServe[0] * 100 / secondServeNoOut[0]) + "%)"; ;
+			rowWinningOn2ndServe[1] = "Punkt nach zweitem Aufschlag";
+            rowWinningOn2ndServe[2] = winningOn2ndServe[1] + " / " + secondServeNoOut[1] + " (" + (int)(winningOn2ndServe[1] * 100 / secondServeNoOut[1]) + "%)"; ;
 			_tblMatchStats.Rows.Add(rowWinningOn2ndServe);
+
+            DataRow rowTotalPointsWon = _tblMatchStats.NewRow();
+            rowTotalPointsWon[0] = totalPointsWon[0];
+            rowTotalPointsWon[1] = "Punkte Gesamt";
+            rowTotalPointsWon[2] = totalPointsWon[1];
+            _tblMatchStats.Rows.Add(rowTotalPointsWon);
+        }
+
+        private void CalcHistoryStats()
+        {
+            int[] games;
+            int actSet = 0;
+            foreach (var set in _match.Sets)
+            {
+                actSet += 1;
+                games = new int[2];
+
+                foreach (var game in set.Games)
+                {
+                    if (game.Winner == eCourtElements.PlayerWithService)
+                    {
+                        if (game.PlayerWithService.Equals(_playerOne))
+                        {
+                            games[0] += 1;
+                        }
+                        else
+                            games[1] += 1;
+                    }
+                    else
+                    {
+                        if (game.PlayerWithoutService.Equals(_playerOne))
+                        {
+                            games[0] += 1;
+                        }
+                        else
+                            games[1] += 1;
+                    }
+                }
+
+                _tblMatchHistory.Rows[0][actSet] = games[0];
+                _tblMatchHistory.Rows[1][actSet] = games[1];
+                games = null;
+            }
         }
 
         private void btnRealtime_Click(object sender, RoutedEventArgs e)

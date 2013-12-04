@@ -59,17 +59,13 @@ namespace MexicanTennisSimulator.Classes
 			}
 			set
 			{
-				if (_matchRunning || 
-					_matchFinished ||
-					value % 2 == 0 ||
+				if (!_matchRunning || 
+					!_matchFinished ||
+					value % 2 != 0 ||
 					value <= 0)
 				{
-					throw new Exception();
-				}
-				else
-				{
-					_numberSets = value;
-					_sets4Win = (int)(value / 2D + 1D / 2D);
+                    _numberSets = value;
+                    _sets4Win = (int)(value / 2D + 1D / 2D);
 				}
 			}
 		}
@@ -85,7 +81,7 @@ namespace MexicanTennisSimulator.Classes
 
         public void StartMatch()
         {
-            if (!_matchRunning)
+            if (!_matchRunning && !_matchFinished)
             {
                 _matchRunning = true;
                 _sets = new List<Set>();

@@ -5,10 +5,10 @@
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:Classes="clr-namespace:MexicanTennisSimulator.Classes" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" x:Name="winMain"
     x:Class="MexicanTennisSimulator.MainWindow"
-    Title="Mexican Tennis Simulator" Height="600" Width="1000"
+    Title="Tennis Simulator" Height="600" Width="1118.5"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen" MinWidth="1000" MinHeight="600"
-    dx:ThemeManager.ThemeName="Office2010Black" Icon="Images\32_32_Sombrero.png" SmallIcon="Images/16_16_Sombrero.png" Loaded="winMain_Loaded"
+    dx:ThemeManager.ThemeName="Office2010Black"  SmallIcon="Images/16x16_TennisBat.png" Icon="Images/32x32_TennisBat.png"
     >
     <Grid x:Name="gridTennis">
         <Grid.ColumnDefinitions>
@@ -126,21 +126,26 @@
             </StackPanel>
         </dxlc:GroupBox>
         <DockPanel Grid.Column="1">
-            <dxlc:GroupBox Header="GroupBox" Margin="10,10,10,0" DockPanel.Dock="Top">
+            <dxlc:GroupBox Header="Simulieren" Margin="10,10,10,0" DockPanel.Dock="Top">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="btnStartMatch" Content="Start" Margin="10,5" FontWeight="Bold" FontSize="22" Click="btnStartMatch_Click"/>
-                    <Button x:Name="btnRealtime" Content="Echtzeit" Grid.Column="1" Margin="10,5" FontSize="24" FontWeight="Bold" Click="btnRealtime_Click"/>
+                    <Button x:Name="btnStartMatch" Content="Start" Margin="10,5" FontWeight="Bold" FontSize="22" Click="btnStartMatch_Click" Grid.ColumnSpan="2"/>
                 </Grid>
             </dxlc:GroupBox>
-            <dxlc:GroupBox Grid.Column="1" Header="GroupBox" Margin="10,0,10,10" Height="69" VerticalAlignment="Bottom" DockPanel.Dock="Bottom"/>
-            <dxlc:GroupBox Header="GroupBox" Margin="10" DockPanel.Dock="Bottom">
-                <dxg:GridControl x:Name="gridMatchStats" AutoPopulateColumns="True">
+            <dxlc:GroupBox Grid.Column="1" Header="Spielverlauf" Margin="10,0,10,10" Height="87" VerticalAlignment="Bottom" DockPanel.Dock="Bottom">
+                <dxg:GridControl x:Name="gridMatchHistory" AutoPopulateColumns="True" ScrollViewer.VerticalScrollBarVisibility="Disabled" Focusable="False">
                     <dxg:GridControl.View>
-                        <dxg:TableView ShowTotalSummary="True" ShowGroupPanel="False"/>
+                        <dxg:TableView ShowGroupPanel="False" ShowColumnHeaders="False" AllowColumnFiltering="False" AllowFilterEditor="False" AllowEditing="False" AllowColumnMoving="False" AllowGrouping="False" AllowHorizontalScrollingVirtualization="False" AllowMoveColumnToDropArea="False" AllowMasterDetail="False" AllowResizing="False" AllowScrollHeaders="False" AllowScrollToFocusedRow="False" AllowSorting="False" AutoMoveRowFocus="False" AutoScrollOnSorting="False" HorizontalScrollbarVisibility="Hidden" VerticalScrollbarVisibility="Hidden"/>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxlc:GroupBox>
+            <dxlc:GroupBox Header="Spielstatistik" Margin="10" DockPanel.Dock="Bottom">
+                <dxg:GridControl x:Name="gridMatchStats" AutoPopulateColumns="True" ScrollViewer.VerticalScrollBarVisibility="Disabled" Focusable="False">
+                    <dxg:GridControl.View>
+                        <dxg:TableView ShowGroupPanel="False" AllowColumnFiltering="False" AllowFilterEditor="False" AllowEditing="False" AllowColumnMoving="False" AllowGrouping="False" AllowHorizontalScrollingVirtualization="False" AllowMoveColumnToDropArea="False" AllowMasterDetail="False" AllowResizing="False" AllowScrollHeaders="False" AllowScrollToFocusedRow="False" AllowSorting="False" AutoMoveRowFocus="False" AutoScrollOnSorting="False" HorizontalScrollbarVisibility="Hidden" VerticalScrollbarVisibility="Hidden"/>
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </dxlc:GroupBox>
