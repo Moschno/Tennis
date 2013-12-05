@@ -5,7 +5,7 @@
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:Classes="clr-namespace:MexicanTennisSimulator.Classes" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" x:Name="winMain"
     x:Class="MexicanTennisSimulator.MainWindow"
-    Title="Tennis Simulator" Height="600" Width="1118.5"
+    Title="Tennis Simulator - Boris Münch, FIN13" Height="600" Width="1118.5"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen" MinWidth="1000" MinHeight="600"
     dx:ThemeManager.ThemeName="Office2010Black" SmallIcon="Images/16x16_TennisBat.png" Icon="Images/32x32_TennisBat.png"

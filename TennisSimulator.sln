@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisSimulator", "MexicanTennisSimulator\TennisSimulator.csproj", "{CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC}"
 EndProject
+Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Setup", "Setup\Setup.isproj", "{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC} = {CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|x86 = CD_ROM|x86
@@ -22,6 +27,16 @@ Global
 		{CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC}.Release|x86.Build.0 = Release|x86
 		{CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC}.SingleImage|x86.ActiveCfg = Release|x86
 		{CDC74EB5-951E-4CF2-9A40-A36CA3C9B2BC}.SingleImage|x86.Build.0 = Release|x86
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.CD_ROM|x86.ActiveCfg = CD_ROM
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.CD_ROM|x86.Build.0 = CD_ROM
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.Debug|x86.ActiveCfg = DVD-5
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.Debug|x86.Build.0 = DVD-5
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.DVD-5|x86.ActiveCfg = DVD-5
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.DVD-5|x86.Build.0 = DVD-5
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.Release|x86.ActiveCfg = SingleImage
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.Release|x86.Build.0 = SingleImage
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.SingleImage|x86.ActiveCfg = SingleImage
+		{35CAB904-169A-4C4F-918E-2EF54E7AB3D3}.SingleImage|x86.Build.0 = SingleImage
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
