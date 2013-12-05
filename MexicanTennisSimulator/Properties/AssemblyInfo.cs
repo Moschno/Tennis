@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyTitle("TennisSimulator")]
 [assembly: AssemblyDescription("Schulprojekt 3.Lehrjahr")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("bsee")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TennisSimulator")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]

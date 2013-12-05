@@ -8,7 +8,7 @@
     Title="Tennis Simulator" Height="600" Width="1118.5"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     WindowStartupLocation="CenterScreen" MinWidth="1000" MinHeight="600"
-    dx:ThemeManager.ThemeName="Office2010Black"  SmallIcon="Images/16x16_TennisBat.png" Icon="Images/32x32_TennisBat.png"
+    dx:ThemeManager.ThemeName="Office2010Black" SmallIcon="Images/16x16_TennisBat.png" Icon="Images/32x32_TennisBat.png"
     >
     <Grid x:Name="gridTennis">
         <Grid.ColumnDefinitions>

@@ -8,8 +8,6 @@ namespace MexicanTennisSimulator.Classes
 {
     class Rally
     {
-        public event FinishedEventHandler RallyFinished;
-
         private Player _playerWithService;
         private Player _playerWithoutService;
         private Ball _gameBall;

@@ -106,22 +106,22 @@ namespace MexicanTennisSimulator.Classes
             {
                 if (_games.Count % 2 == 0)
                 {
-                    _gamesPlayerWithServiceInFirstGame += 1;
+                    _gamesPlayerWithoutServiceInFirstGame += 1;
                 }
                 else
                 {
-                    _gamesPlayerWithoutServiceInFirstGame += 1;
+                    _gamesPlayerWithServiceInFirstGame += 1;
                 }
             }
             else
             {
                 if (_games.Count % 2 == 0)
                 {
-                    _gamesPlayerWithoutServiceInFirstGame += 1;
+                    _gamesPlayerWithServiceInFirstGame += 1;
                 }
                 else
                 {
-                    _gamesPlayerWithServiceInFirstGame += 1;
+                    _gamesPlayerWithoutServiceInFirstGame += 1;
                 }
             }
 

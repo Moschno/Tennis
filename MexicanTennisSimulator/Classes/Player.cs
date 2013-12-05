@@ -83,7 +83,7 @@ namespace MexicanTennisSimulator.Classes
 
             if (_tempBatProps.BatType == eBatType.FirstService)
             {
-                int safety = 18;
+                int safety = 20;
                 int disturbFactor = CalcBatTargetDisturb();
                 _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor)
                                                                          , Match.BallServiceOutY + safety - disturbFactor);
@@ -99,14 +99,14 @@ namespace MexicanTennisSimulator.Classes
             {
                 int safety = 15;
                 int disturbFactor = CalcBatTargetDisturb();
-                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor)
+                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor) * negateFactor
                                                                          , Match.BallOutY + safety - disturbFactor);
             }
             else if (_tempBatProps.BatType == eBatType.Bat)
             {
                 int safety = 20;
                 int disturbFactor = CalcBatTargetDisturb();
-                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor)
+                _tempBatProps.vBallTargetPosFromBattingPlayer = new Point((Match.BallOutRightX - safety + disturbFactor) * negateFactor
                                                                          , Match.BallOutY + safety - disturbFactor);
             }
         }
@@ -118,12 +118,19 @@ namespace MexicanTennisSimulator.Classes
             if (_tempBatProps.BatPlayerBat == eBats.Service)
             {
                 disturbFactorSpeed = (int)(_tempBatProps.BallSpeedBat / 10);
-                disturbFactor = (int)(disturbFactorSpeed * 1.2 - Probability.GetBetterRandomNumber(Service * 3)); 
+                if (_tempBatProps.BatType == eBatType.FirstService)
+                {
+                    disturbFactor = (int)(disturbFactorSpeed * 1.5 - Probability.GetBetterRandomNumber(Service * 3));  
+                }
+                else if (_tempBatProps.BatType == eBatType.SecondService)
+                {
+                    disturbFactor = (int)(disturbFactorSpeed * 1.2 - Probability.GetBetterRandomNumber(Service * 3));  
+                }
             }
             else if (_tempBatProps.BatPlayerBat == eBats.Return)
             {
                 disturbFactorSpeed = (int)(_tempBatProps.BallSpeedBat / 10);
-                disturbFactor = (int)(disturbFactorSpeed * 1.5 - Probability.GetBetterRandomNumber(Retörn * 3));
+                disturbFactor = (int)(disturbFactorSpeed * 1.4 - Probability.GetBetterRandomNumber(Retörn * 3));
             }
             else if (_tempBatProps.BatPlayerBat == eBats.Bat)
             {
@@ -154,9 +161,10 @@ namespace MexicanTennisSimulator.Classes
             double batSpeed = 0;
             if (_tempBatProps.BatType == eBatType.FirstService)
             {
-                int firstService = Service;
+                int factor = Probability.GetBetterRandomNumber(Service);
+                int firstService = (int)(Service / (Service - factor)) + Service / (Probability.GetBetterRandomNumber(1, Service) * Probability.GetBetterRandomNumber(5, 10));
                 interval = (MaxGlobalServiceSpeed_KmH - MinGlobalServiceSpeed_KmH) / 10;
-                batSpeed = MinGlobalServiceSpeed_KmH + firstService * interval;   
+                batSpeed = MinGlobalServiceSpeed_KmH + firstService * interval + Probability.GetBetterRandomNumber(0, 20);   
             }
             else if (_tempBatProps.BatType == eBatType.SecondService)
             {

@@ -181,7 +181,8 @@ namespace MexicanTennisSimulator.Classes
                 _tempBatProps.BallIsTaken = false;
                 return;
             }
-            else if (_tempBatProps.BatPlayerBat == eBats.Service)
+            
+            if (_tempBatProps.BatPlayerBat == eBats.Service)
             {
                 if (_tempBatProps.BallWillLandOut)
                 {
@@ -218,7 +219,11 @@ namespace MexicanTennisSimulator.Classes
             {
                 int random = Probability.GetBetterRandomNumber(_playerTake.Retörn + 10);
                 int number = (int)((double)random / 2D + 0.5);
-                double returnFactor = (double)number / 10D;
+                double returnFactor = new double();
+                if (_tempBatProps.BatType == eBatType.FirstService)
+                    returnFactor = (double)number / 10D; 
+                else
+                    returnFactor = (double)number; 
                 timeDifference += returnFactor;
             }
             if (timeDifference >= 0)
@@ -238,11 +243,11 @@ namespace MexicanTennisSimulator.Classes
                 {
                     if (_tempBatProps.BallTakingDifficulty == eTaking.Hard)
                     {
-                        _tempBatProps.BallIsTaken = Probability.RollByFactor("30"); //todo: Wahrscheinlichkeit abhängig vom Spieler
+                        _tempBatProps.BallIsTaken = Probability.RollByFactor("30");
                     }
                     else if (_tempBatProps.BallTakingDifficulty == eTaking.Medium)
                     {
-                        _tempBatProps.BallIsTaken = Probability.RollByFactor("70"); //todo: Wahrscheinlichkeit abhängig vom Spieler
+                        _tempBatProps.BallIsTaken = Probability.RollByFactor("70");
                     }
                     else if (_tempBatProps.BallTakingDifficulty == eTaking.Easy)
                     {
@@ -272,7 +277,7 @@ namespace MexicanTennisSimulator.Classes
             }
         }
 
-        private void CalcBatDisturb() //todo: Schlag stören
+        private void CalcBatDisturb()
         {
             _tempBatProps.vBallFirstLandingPos = _tempBatProps.vBallTargetPosFromBattingPlayer;
             _tempBatProps.BallSpeedTillFirstLanding_KmH = _tempBatProps.BallSpeedBat;

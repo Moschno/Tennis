@@ -18,7 +18,7 @@ namespace MexicanTennisSimulator.Classes
         public static readonly double BallOutY = -vCourtHeight / 2 / 2 + Ball.BallDiameter / 2;
         public static readonly double BallServiceOutY = -vCourtHeight / 2 / 39 / 2 * 21 + Ball.BallDiameter / 2;
 
-		private Player _playerOne;
+        private Player _playerOne;
 		private Player _playerTwo;
 		private Set _set;
 		private List<Set> _sets;
@@ -29,6 +29,16 @@ namespace MexicanTennisSimulator.Classes
 		private int _sets4Win;
 		private int _setsPlayerOne = 0;
 		private int _setsPlayerTwo = 0;
+
+        public Player PlayerOne
+        {
+            get { return _playerOne; }
+        }
+
+        public Player PlayerTwo
+        {
+            get { return _playerTwo; }
+        }
 
 		public List<Set> Sets
 		{

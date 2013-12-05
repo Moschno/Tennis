@@ -16,27 +16,10 @@ namespace MexicanTennisSimulator.Classes
     sealed class Ball : CourtElement
     {
         public const int BallDiameter = 10;
-        private Point _firstLandingPos;
-        private Player _lastBatPlayer;
-
-        public Point FirstLandingPos
-        {
-            get { return _firstLandingPos; }
-        }
-
-        public Player LastBatPlayer
-        {
-            get { return _lastBatPlayer; }
-        }
 
         public Ball()
             : base()
         {
-        }
-
-        public void GotBatted(Player ballBatter, double speed_ms)
-        {
-            //MoveToTargetPos(speed_ms);
         }
 
         private int CompareDistances(Point startPos, Point targetPos1, Point targetPos2)
